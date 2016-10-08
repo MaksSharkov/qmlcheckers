@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qml/logic/Chatter.qml</file>
+        <file>qml/logic/ChessModel.qml</file>
+        <file>qml/logic/Client.qml</file>
+        <file>qml/logic/Loginer.qml</file>
+        <file>qml/logic/Player.qml</file>
+        <file>qml/view/Board.qml</file>
+        <file>qml/view/Chat.qml</file>
+        <file>qml/view/LoginPage.qml</file>
+        <file>qml/view/main.qml</file>
+        <file>qml/view/GameScreen.qml</file>
+        <file>settings.js</file>
+    </qresource>
+</RCC>
