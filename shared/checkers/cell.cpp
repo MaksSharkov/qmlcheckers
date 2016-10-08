@@ -8,13 +8,16 @@ Cell::Cell(int row, int col, QObject *parent)
     , m_col(col)
 {
     purgeMan();
+    connect(this,SIGNAL(rowChanged(uint)),this,SIGNAL(nameChanged()));
+    connect(this,SIGNAL(colChanged(uint)),this,SIGNAL(nameChanged()));
+    connect(this,SIGNAL(nameChanged()),this,SIGNAL(isBlackChanged()));
+    connect(this,SIGNAL(manChanged(QJsonObject)),this,SIGNAL(isEmptyChanged()));
 }
 
 Cell::Cell(const Cell &other)
     : Cell(other.row(),other.col(),other.parent())
 {
-    man["rank"] = other.man["rank"];
-    man["whoose"] = other.man["whoose"];
+    setMan(other.man());
 }
 
 void Cell::setRow(int row)
@@ -33,7 +36,7 @@ void Cell::setCol(int col)
     }
 }
 
-bool Cell::isBlack(){
+bool Cell::isBlack() const{
     return isBlack(m_row,m_col);
 }
 
@@ -47,34 +50,40 @@ bool Cell::isBlack(int row,int col)
 
 bool Cell::isEmpty() const
 {
-    return man["rank"] == "none";
+    return m_man["rank"] == "none";
 }
 
 void Cell::putMan(QString rank, QString whoose)
 {
     assert((rank=="none")||(rank=="man")||(rank=="king"));
-    assert(whoose=="topPlayer"||(whoose=="bottomPlayer"));
-    man["rank"] = rank;
-    man["whoose"] = whoose;
+    assert(whoose==""||whoose=="topPlayer"||(whoose=="bottomPlayer"));
+    if(m_man["rank"]!=rank || m_man["whoose"]!= whoose){
+        m_man["rank"] = rank;
+        m_man["whoose"] = whoose;
+        emit manChanged(m_man);
+    }
 }
 
 void Cell::purgeMan()
 {
-    man["rank"] = "none";
-    man["whoose"] = "";
+    if(!isEmpty()){
+        m_man["rank"] = "none";
+        m_man["whoose"] = "";
+        emit manChanged(m_man);
+    }
 }
 
 bool Cell::belongsTo(QString player) const
 {
     if(!isEmpty())
-        return man["whoose"] == player;
+        return m_man["whoose"] == player;
     else
         return false;
 }
 
 void Cell::swapMans(Cell &with)
 {
-    qSwap(man,with.man);
+    qSwap(m_man,with.m_man);
 }
 
 
@@ -84,11 +93,22 @@ Cell& Cell::operator=(const Cell &second)
     return *this;
 }
 
-QJsonObject Cell::toJson()
+QJsonObject Cell::toJson() const
 {
     QJsonObject result;
     result["row"]=m_row;
     result["col"]=m_col;
-    result["man"]=man;
+    result["man"]=m_man;
     return result;
+}
+
+QString Cell::name()const{
+    QChar letter='a'+m_row;
+    QString result=letter+QString::number(m_col);
+    return result;
+}
+
+void Cell::setMan(const QJsonObject &man)
+{
+    putMan(man["rank"].toString(),man["whoose"].toString());
 }

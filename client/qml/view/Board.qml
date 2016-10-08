@@ -1,7 +1,7 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.0
 import "qrc:/settings.js" as Settings
-
+import Checkers 1.0
 import "../logic"
 
 GridView{
@@ -29,19 +29,24 @@ GridView{
         height: grid.cellHeight
         color: index==grid.currentIndex ?
                    Settings.selectedCellColor:
-                   Settings.isBlack(row,col) ? Settings.blackCellColor : Settings.whiteCellColor
+                   cell.isBlack ? Settings.blackCellColor : Settings.whiteCellColor
 
-        readonly property string name: Settings.getName(row,col)
-        readonly property bool hasMan: model.man.rank !== "none"
-        readonly property string manColor: hasMan ?
-                                             model.man.whoose === "topPlayer" ?
+        property Cell cell:Cell{
+            id:cell
+            row: model.row
+            col: model.col
+            man: model.man
+        }
+
+        readonly property string manColor: !cell.isEmpty ?
+                                             cell.man.whoose === "topPlayer" ?
                                                    checkersModel.topPlayerColor
                                                  : checkersModel.bottomPlayerColor
                                              : color
 
         MouseArea{
             anchors.fill: parent
-            enabled: !cellDelegate.hasMan
+            enabled: cell.isEmpty
             onClicked: {
                 if(grid.currentIndex !== -1){
                     checkersModel.requestMove(checkersModel.get(grid.currentIndex),checkersModel.get(index))
@@ -54,7 +59,7 @@ GridView{
             id:nameOfCell
             visible: Settings.debug
             color: Settings.debugTextColor
-            text: name
+            text: cell.name
         }
 
         Rectangle{
@@ -62,11 +67,11 @@ GridView{
             anchors.fill: parent
             anchors.margins: 10
             radius: width
-            visible: cellDelegate.hasMan
+            visible: !cell.isEmpty
             color: manColor
             MouseArea{
                 anchors.fill: parent
-                enabled: cellDelegate.hasMan
+                enabled: parent.visible
                 onClicked:{
                     grid.currentIndex = model.index
                 }

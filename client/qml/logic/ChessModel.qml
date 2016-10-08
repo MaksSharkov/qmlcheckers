@@ -30,11 +30,13 @@ ListModel{
         }else if(!isMyTurnNow){
             console.log("It's not your turn error.")
             return false
-        }else if(!Settings.isBlack(sourceCell.row,sourceCell.col)
-                 || !Settings.isBlack(destinationCell.row,destinationCell.col)){
-            console.log("Only black fields are usable.")
-            return false
-        }else if(iAmBottomPlayer && (destinationCell.row-sourceCell.row !== 1)){
+        }
+//        else if(!Settings.isBlack(sourceCell.row,sourceCell.col)
+//                 || !Settings.isBlack(destinationCell.row,destinationCell.col)){
+//            console.log("Only black fields are usable.")
+//            return false
+//        }
+        else if(iAmBottomPlayer && (destinationCell.row-sourceCell.row !== 1)){
             console.log("Bottom player cannot move back or too far front."+sourceCell.row+">"+destinationCell.row)
             return false
         }else if(!iAmBottomPlayer && (sourceCell.row-destinationCell.row !== 1)){
@@ -77,4 +79,5 @@ ListModel{
         set(fromIndex,from)
         set(toIndex,to)
     }
+
 }
