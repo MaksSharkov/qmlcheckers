@@ -7,7 +7,7 @@ import "../logic"
 GridView{
     id: grid
 
-    property int boardSize: Settings.defaultBoardSize
+    property alias boardSize: checkersModel.boardSize
     property alias client: checkersModel.client
 
     verticalLayoutDirection: GridView.BottomToTop

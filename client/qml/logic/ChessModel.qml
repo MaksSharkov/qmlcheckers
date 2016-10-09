@@ -11,7 +11,7 @@ CheckersBoard{
     property string topPlayerColor
     property string bottomPlayerColor
 
-    property bool isMyTurnNow: true
+    property bool isMyTurnNow: false
     property bool iAmBottomPlayer: true
 
     function requestMove(sourceCell,destinationCell){
@@ -34,6 +34,7 @@ CheckersBoard{
         }else if(reply["type"]==="gameInit"){
             var board=reply["board"]
             var boardSize=reply["boardSize"]
+            isMyTurnNow = client.name === reply["bottomPlayer"]
             initialize(board,boardSize)
         }
     }

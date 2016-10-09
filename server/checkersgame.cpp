@@ -72,6 +72,8 @@ void CheckersGame::initializeGame()
     message["type"]="gameInit";
     message["board"]=m_board.toJson();
     message["boardSize"]=m_board.boardSize();
+    message["topPLayer"]=topPlayerUsername;
+    message["bottomPlayer"]=bottomPlayerUsername;
 
     qDebug()<<"GameInitialized";
     notifyAbout(message);
@@ -80,11 +82,11 @@ void CheckersGame::initializeGame()
 void CheckersGame::onClientAdded(QWebSocket* client,QString username)
 {
     Q_UNUSED(client)
-    if(topPlayerUsername.isEmpty()){
-        setTopPlayer(username);
-        initializeGame();//DEBUGGING ONLY!!!
-    }else if(bottomPlayer().isEmpty()){
+    if(bottomPlayer().isEmpty()){
         setBottomPlayer(username);
+        initializeGame();//DEBUGGING ONLY!!!
+    }else if(topPlayerUsername.isEmpty()){
+        setTopPlayer(username);
         initializeGame();
     }
 }
