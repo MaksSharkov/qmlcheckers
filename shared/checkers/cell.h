@@ -37,6 +37,7 @@ public:
     Q_INVOKABLE bool belongsTo(QString player)const;
 
     Cell& operator=(const Cell &second);
+    bool operator==(const Cell &other);
 
     QJsonObject toJson()const;
 signals:

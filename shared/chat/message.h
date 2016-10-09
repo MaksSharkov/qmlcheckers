@@ -6,7 +6,7 @@
 #include <QJsonParseError>
 #include <QTextStream>
 #include <QDataStream>
-#include "../types.h"
+#include "types.h"
 
 namespace HoldemChat {
 

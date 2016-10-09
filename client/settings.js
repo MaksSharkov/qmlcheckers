@@ -9,6 +9,3 @@ var defaultBoardSize = 8
 var debug = false
 var debugTextColor = "green"
 
-function indexOf(row,col){
-    return row*boardSize+col
-}

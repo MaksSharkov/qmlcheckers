@@ -7,6 +7,8 @@ Product {
     Depends { name: "cpp" }
     Depends { name: "Qt"; submodules: ["core", "websockets"] }
 
+    cpp.includePaths: "."
+
     files: [
         "chat/conferencemessage.cpp",
         "chat/conferencemessage.h",
@@ -16,6 +18,8 @@ Product {
         "chat/personalmessage.h",
         "checkers/cell.cpp",
         "checkers/cell.h",
+        "checkers/chessboard.cpp",
+        "checkers/chessboard.h",
         "types.h",
     ]
 

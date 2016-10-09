@@ -83,7 +83,9 @@ bool Cell::belongsTo(QString player) const
 
 void Cell::swapMans(Cell &with)
 {
-    qSwap(m_man,with.m_man);
+    QJsonObject temp = man();
+    setMan(with.man());
+    with.setMan(temp);
 }
 
 
@@ -111,4 +113,9 @@ QString Cell::name()const{
 void Cell::setMan(const QJsonObject &man)
 {
     putMan(man["rank"].toString(),man["whoose"].toString());
+}
+
+bool Cell::operator ==(const Cell &other)
+{
+    return (m_col==other.m_col) && (m_row == other.m_row) && (m_man == other.m_man);
 }

@@ -12,8 +12,6 @@ Product {
     files: [
         "checkersgame.cpp",
         "checkersgame.h",
-        "chessboard.cpp",
-        "chessboard.h",
         "loginmanager.cpp",
         "loginmanager.h",
         "main.cpp",

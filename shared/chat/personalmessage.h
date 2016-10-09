@@ -5,7 +5,7 @@
 #include <QJsonObject>
 
 #include "message.h"
-#include "../types.h"
+#include "types.h"
 
 namespace HoldemChat {
 

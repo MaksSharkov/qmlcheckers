@@ -56,7 +56,7 @@ void CheckersGame::initializeGame()
     const int initRowCount=3;
     const int boardSize=m_board.boardSize();
 
-    m_board.clear();
+    m_board.clearFromMans();
 
     int col;
     for(int row=boardSize-1;row>boardSize-1-initRowCount;row--)
@@ -103,6 +103,6 @@ void CheckersGame::onClientRemoved(QWebSocket *client, QString username)
 void CheckersGame::endGame(QString winnersUsername)
 {
     qDebug()<<"Game ended. Winner:"+winnersUsername;
-    m_board.clear();
+    m_board.clearFromMans();
     emit gameEnded(winnersUsername);
 }

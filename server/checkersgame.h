@@ -1,7 +1,7 @@
 #ifndef CHECKERSCOORDINATOR_H
 #define CHECKERSCOORDINATOR_H
 
-#include "chessboard.h"
+#include "checkers/chessboard.h"
 
 #include <QObject>
 #include <QWebSocket>
