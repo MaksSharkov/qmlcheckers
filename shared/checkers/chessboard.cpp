@@ -113,8 +113,8 @@ void ChessBoard::initRoles()
 
 int ChessBoard::indexOf(int row, int col)
 {
-    assert(row<m_boardSize);
-    assert(col<m_boardSize);
+    assert(row>=0 && row<m_boardSize);
+    assert(col>=0 && col<m_boardSize);
     return (row*m_boardSize+col);
 }
 

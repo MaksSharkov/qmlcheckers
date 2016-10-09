@@ -32,12 +32,7 @@ void CheckersGame::onReplyReceived(QWebSocket *client, QJsonObject reply)
     if(reply["type"]=="moveMan"){
         QJsonObject from=reply["from"].toObject();
         QJsonObject to=reply["to"].toObject();
-        int rowFrom=from["row"].toInt();
-        int colFrom=from["col"].toInt();
-        int rowTo=to["row"].toInt();
-        int colTo=to["col"].toInt();
-        m_board.moveMan(rowFrom,colFrom
-                ,rowTo,colTo);
+        m_board.moveMan(from,to);
     }
 }
 
