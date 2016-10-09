@@ -155,10 +155,10 @@ void ChessBoard::append(const QJsonObject &cell)
 
     Cell newCell=Cell(cell["row"].toInt(),cell["col"].toInt(),this);
     newCell.setMan(cell["man"].toObject());
-    connect(&newCell,SIGNAL(manChanged(QJsonObject)),this,SLOT(handleManChanged()));
 
     emit beginInsertRows(QModelIndex(), index, index);
     m_board.push_back(newCell);
+    connect(&(m_board.last()),SIGNAL(manChanged(QJsonObject)),this,SLOT(handleManChanged()));
     emit endInsertRows();
 }
 

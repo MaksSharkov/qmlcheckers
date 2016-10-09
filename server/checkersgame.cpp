@@ -48,6 +48,7 @@ void CheckersGame::onManMoved(Cell &from, Cell &to)
     message["from"]=from.toJson();
     message["to"]=to.toJson();
 
+    qDebug()<<"Man moved from"<<message["from"]<<" to "<<message["to"];
     emit notifyAbout(message);
 }
 
