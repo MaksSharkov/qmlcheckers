@@ -5,6 +5,7 @@ LoginManager::LoginManager(const QMap<QString,QWebSocket*> *clients,QObject *par
 {
     m_database.insert("user1","user1");
     m_database.insert("user2","user2");
+    m_database.insert("user3","user3");
 }
 
 bool LoginManager::passwordValid(const QString username, const QString password)

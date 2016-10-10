@@ -10,11 +10,12 @@ GridView{
     property alias boardSize: checkersModel.boardSize
     property alias client: checkersModel.client
 
-    layoutDirection: checkersModel.iAmBottomPlayer ?
+    property bool iAmBottomPlayer: checkersModel.role === "bottomPlayer"
+    layoutDirection: iAmBottomPlayer ?
                          GridView.LeftToRight
                        : GridView.RightToLeft
 
-    verticalLayoutDirection: checkersModel.iAmBottomPlayer ?
+    verticalLayoutDirection: iAmBottomPlayer ?
                                  GridView.BottomToTop
                                : GridView.TopToBottom
 
@@ -75,9 +76,13 @@ GridView{
             radius: width
             visible: !cell.isEmpty
             color: manColor
+
+            property bool isMine: iAmBottomPlayer ?
+                                      cell.man["whoose"] === "bottomPlayer"
+                                    : cell.man["whoose"] === "topPlayer"
             MouseArea{
                 anchors.fill: parent
-                enabled: parent.visible
+                enabled: parent.isMine
                 onClicked:{
                     grid.currentIndex = model.index
                 }

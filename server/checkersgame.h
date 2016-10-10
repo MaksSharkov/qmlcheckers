@@ -23,8 +23,11 @@ public:
         return bottomPlayerUsername;
     }
 
+    QJsonObject getBoardInfo();
+
 signals:
     void notifyAbout(QJsonObject message);
+    void sendReply(QWebSocket*,QJsonObject);
     void topPlayerChanged(QString player);
     void bottomPlayerChanged(QString player);
     void gameEnded(QString winnersUsername);

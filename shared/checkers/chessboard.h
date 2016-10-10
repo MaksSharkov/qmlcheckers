@@ -54,7 +54,6 @@ private slots:
     void handleManChanged();
     void setBoardSize(int boardSize);
 private:
-    Cell *cellAt(int row,int col);
     void initRoles();
 
 private:

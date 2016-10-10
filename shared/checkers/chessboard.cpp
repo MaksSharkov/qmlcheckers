@@ -34,27 +34,20 @@ bool ChessBoard::isMoveCorrect(const QString player,const QJsonObject &from,cons
     return true;//TODO: implement
 }
 
-Cell* ChessBoard::cellAt(int row, int col)
-{
-    int index= indexOf(row,col);
-    return &(m_board[index]);
-}
 
 void ChessBoard::addMan(int row,int col,QString rank,QString player)
 {
-    Cell *cell=cellAt(row,col);
-    cell->putMan(rank,player);
+    m_board[indexOf(row,col)].putMan(rank,player);
 }
 
 void ChessBoard::moveMan(const QString player,int rowFrom, int colFrom, int rowTo, int colTo)
 {
-    Cell *from=cellAt(rowFrom,colFrom);
-    Cell *to=cellAt(rowTo,colTo);
-
-    if(isMoveCorrect(player,*from,*to))
+    Cell &from=m_board[indexOf(rowFrom,colFrom)];
+    Cell &to=m_board[indexOf(rowTo,colTo)];
+    if(isMoveCorrect(player,from,to))
     {
-        from->swapMans(*to);
-        emit manMoved(*from,*to);
+        from.swapMans(to);
+        emit manMoved(from,to);
     }
 }
 

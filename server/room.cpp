@@ -10,8 +10,13 @@ Room::Room(QObject *parent)
     connect(&m_game,SIGNAL(notifyAbout(QJsonObject))
             ,this,SLOT(notifyAbout(QJsonObject)));
 
-    connect(this,SIGNAL(clientAdded(QWebSocket*,QString)),&m_game,SLOT(onClientAdded(QWebSocket*,QString)));
-    connect(this,SIGNAL(clientRemoved(QWebSocket*,QString)),&m_game,SLOT(onClientRemoved(QWebSocket*,QString)));
+    connect(this,SIGNAL(clientAdded(QWebSocket*,QString))
+            ,&m_game,SLOT(onClientAdded(QWebSocket*,QString)));
+    connect(this,SIGNAL(clientRemoved(QWebSocket*,QString))
+            ,&m_game,SLOT(onClientRemoved(QWebSocket*,QString)));
+
+    connect(&m_game,SIGNAL(sendReply(QWebSocket*,QJsonObject))
+            ,this,SIGNAL(sendReply(QWebSocket*,QJsonObject)));
 }
 
 void Room::notifyAbout(const QJsonObject &message)

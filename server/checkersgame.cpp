@@ -47,6 +47,18 @@ void CheckersGame::onManMoved(Cell &from, Cell &to)
     emit notifyAbout(message);
 }
 
+QJsonObject CheckersGame::getBoardInfo()
+{
+    QJsonObject message;
+    message["type"]="gameInit";
+    message["board"]=m_board.toJson();
+    message["boardSize"]=m_board.boardSize();
+    message["topPLayer"]=topPlayerUsername;
+    message["bottomPlayer"]=bottomPlayerUsername;
+
+    return message;
+}
+
 void CheckersGame::initializeGame()
 {
     const int initRowCount=3;
@@ -63,15 +75,10 @@ void CheckersGame::initializeGame()
         for(col=row%2;col<boardSize;col+=2)
             m_board.addMan(row,col,"man","bottomPlayer");
 
-    QJsonObject message;
-    message["type"]="gameInit";
-    message["board"]=m_board.toJson();
-    message["boardSize"]=m_board.boardSize();
-    message["topPLayer"]=topPlayerUsername;
-    message["bottomPlayer"]=bottomPlayerUsername;
-
-    qDebug()<<"GameInitialized";
+    QJsonObject message = getBoardInfo();
     notifyAbout(message);
+    qDebug()<<"GameInitialized";
+
 }
 
 void CheckersGame::onClientAdded(QWebSocket* client,QString username)
@@ -82,6 +89,9 @@ void CheckersGame::onClientAdded(QWebSocket* client,QString username)
     }else if(topPlayerUsername.isEmpty()){
         setTopPlayer(username);
         initializeGame();
+    }else{
+        QJsonObject message = getBoardInfo();
+        emit sendReply(client,message);
     }
 }
 
