@@ -32,7 +32,16 @@ void CheckersGame::onReplyReceived(QWebSocket *client, QJsonObject reply, QStrin
     if(reply["type"]=="moveMan"){
         QJsonObject from=reply["from"].toObject();
         QJsonObject to=reply["to"].toObject();
-        m_board.moveMan(username,from,to);
+
+        QString player;
+        if(username == topPlayer())
+            player="topPlayer";
+        else if(username == bottomPlayer())
+            player="bottomPlayer";
+        else
+            return;
+
+        m_board.moveMan(player,from,to);
     }
 }
 
@@ -42,6 +51,7 @@ void CheckersGame::onManMoved(Cell &from, Cell &to)
     message["type"]="moveMan";
     message["from"]=from.toJson();
     message["to"]=to.toJson();
+    message["player"]=to.man()["whoose"];
 
     qDebug()<<"Man moved from"<<message["from"]<<" to "<<message["to"];
     emit notifyAbout(message);
@@ -53,7 +63,7 @@ QJsonObject CheckersGame::getBoardInfo()
     message["type"]="gameInit";
     message["board"]=m_board.toJson();
     message["boardSize"]=m_board.boardSize();
-    message["topPLayer"]=topPlayerUsername;
+    message["topPlayer"]=topPlayerUsername;
     message["bottomPlayer"]=bottomPlayerUsername;
 
     return message;
@@ -86,7 +96,8 @@ void CheckersGame::onClientAdded(QWebSocket* client,QString username)
     Q_UNUSED(client)
     if(bottomPlayer().isEmpty()){
         setBottomPlayer(username);
-    }else if(topPlayerUsername.isEmpty()){
+        return;
+    }else if(topPlayer().isEmpty()){
         setTopPlayer(username);
         initializeGame();
     }else{

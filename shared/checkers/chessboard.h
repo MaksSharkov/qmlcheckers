@@ -30,7 +30,7 @@ public:
     }
 
     QJsonArray toJson()const;
-    Q_INVOKABLE int indexOf(int row,int col);
+    Q_INVOKABLE int indexOf(int row,int col) const;
     Q_INVOKABLE QJsonObject get(int index);
 
     virtual int rowCount(const QModelIndex &parent) const;

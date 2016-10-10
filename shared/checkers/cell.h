@@ -39,6 +39,14 @@ public:
     Cell& operator=(const Cell &second);
     bool operator==(const Cell &other);
 
+    Q_INVOKABLE bool containsMan()const{
+        return m_man["rank"]=="man";
+    }
+
+    Q_INVOKABLE bool containsKing()const{
+        return m_man["rank"]=="king";
+    }
+
     QJsonObject toJson()const;
 signals:
     void rowChanged(uint);

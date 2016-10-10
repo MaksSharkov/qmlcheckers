@@ -25,15 +25,41 @@ void ChessBoard::initializeWithEmpty(int boardSize)
 
 bool ChessBoard::isMoveCorrect(const QString player,const Cell &from,const Cell &to) const
 {
-    return isMoveCorrect(player,from.toJson(),to.toJson());
+    if(!from.belongsTo(player)){
+        qDebug()<<"Attempt to move man that doesn't belong to player."<<player<<"!="<<from.man()["whoose"].toString()<<endl;
+        return false;
+    }else if(!to.isEmpty()){
+        qDebug()<<"Attempt to move man to non-empty cell"<<endl;
+        return false;
+    }else if(from.isEmpty()){
+        qDebug()<<"Attempt to move man to empty cell"<<endl;
+        return false;
+    }else if(from.row() == to.row() && from.col() == from.col()){
+        qDebug()<<"Attempt to move man to its current location"<<endl;
+        return false;
+    }else if(!to.isBlack()){
+        qDebug()<<"Attempt to move man to non-black cell"<<endl;
+        return false;
+    }else if(from.containsMan()){
+        int distanseRow=to.row()-from.row();
+        int distanseCol=abs(to.col()-from.col());
+        if((distanseCol!=1)||((player=="bottomPlayer" && distanseRow != 1)
+                ||(player=="topPlayer" && distanseRow != -1))){
+                qDebug()<<"Attempt to move man farther that it can be moved"<<endl;
+                return false;
+            }
+    }
+
+    return true;
 }
 
 
 bool ChessBoard::isMoveCorrect(const QString player,const QJsonObject &from,const QJsonObject &to)const
 {
-    return true;//TODO: implement
+    const Cell& cellFrom=m_board.at(indexOf(from["row"].toInt(),from["col"].toInt()));
+    const Cell& cellTo = m_board.at(indexOf(to["row"].toInt(),to["col"].toInt()));
+    return isMoveCorrect(player,cellFrom,cellTo);
 }
-
 
 void ChessBoard::addMan(int row,int col,QString rank,QString player)
 {
@@ -105,7 +131,7 @@ void ChessBoard::initRoles()
     m_roleNames[RoleNames::ManRole]="man";
 }
 
-int ChessBoard::indexOf(int row, int col)
+int ChessBoard::indexOf(int row, int col)const
 {
     assert(row>=0 && row<m_boardSize);
     assert(col>=0 && col<m_boardSize);
@@ -152,7 +178,8 @@ void ChessBoard::append(const QJsonObject &cell)
 
     emit beginInsertRows(QModelIndex(), index, index);
     m_board.push_back(newCell);
-    connect(&(m_board.last()),SIGNAL(manChanged(QJsonObject)),this,SLOT(handleManChanged()));
+    connect(&(m_board.last()),SIGNAL(manChanged(QJsonObject))
+            ,this,SLOT(handleManChanged()));
     emit endInsertRows();
 }
 
@@ -167,7 +194,8 @@ void ChessBoard::initialize(QJsonArray board,int boardSize)
 
 void ChessBoard::moveMan(const QString player, QJsonObject from, QJsonObject to)
 {
-    moveMan(player,from["row"].toInt(),from["col"].toInt(),to["row"].toInt(),to["col"].toInt());
+    moveMan(player,from["row"].toInt(),from["col"].toInt()
+            ,to["row"].toInt(),to["col"].toInt());
 }
 
 void ChessBoard::setBoardSize(int boardSize)
