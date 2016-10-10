@@ -22,7 +22,9 @@ public:
 
     Q_INVOKABLE void initialize(QJsonArray board,int boardSize);
     Q_INVOKABLE void initializeWithEmpty(int boardSize);
-    Q_INVOKABLE bool isMoveCorrect(Cell &from, Cell &to)const;
+    Q_INVOKABLE bool isMoveCorrect(const Cell &from,const Cell &to)const;
+    Q_INVOKABLE bool isMoveCorrect(const QJsonObject &from, const QJsonObject &to)const;
+
     int boardSize()const{
         return m_boardSize;
     }

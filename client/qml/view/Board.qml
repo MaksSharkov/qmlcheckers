@@ -10,7 +10,13 @@ GridView{
     property alias boardSize: checkersModel.boardSize
     property alias client: checkersModel.client
 
-    verticalLayoutDirection: GridView.BottomToTop
+    layoutDirection: checkersModel.iAmBottomPlayer ?
+                         GridView.LeftToRight
+                       : GridView.RightToLeft
+
+    verticalLayoutDirection: checkersModel.iAmBottomPlayer ?
+                                 GridView.BottomToTop
+                               : GridView.TopToBottom
 
     cellHeight: height / boardSize
     cellWidth: width / boardSize
@@ -77,6 +83,12 @@ GridView{
                 }
             }
         }
+    }
+
+    BusyIndicator{
+        id:busyIndicator
+        anchors.fill: parent
+        visible: !checkersModel.isInitialized
     }
 
     Connections{

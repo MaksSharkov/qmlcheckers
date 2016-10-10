@@ -79,7 +79,6 @@ void CheckersGame::onClientAdded(QWebSocket* client,QString username)
     Q_UNUSED(client)
     if(bottomPlayer().isEmpty()){
         setBottomPlayer(username);
-        initializeGame();//DEBUGGING ONLY!!!
     }else if(topPlayerUsername.isEmpty()){
         setTopPlayer(username);
         initializeGame();

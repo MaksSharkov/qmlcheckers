@@ -13,6 +13,7 @@ CheckersBoard{
 
     property bool isMyTurnNow: false
     property bool iAmBottomPlayer: true
+    property bool isInitialized: false
 
     function requestMove(sourceCell,destinationCell){
 //        if(isMoveCorrect(sourceCell,destinationCell)){
@@ -34,8 +35,11 @@ CheckersBoard{
         }else if(reply["type"]==="gameInit"){
             var board=reply["board"]
             var boardSize=reply["boardSize"]
-            isMyTurnNow = client.name === reply["bottomPlayer"]
+            var amIbottom = client.name === reply["bottomPlayer"]
+            isMyTurnNow = amIbottom
+            iAmBottomPlayer = amIbottom
             initialize(board,boardSize)
+            isInitialized=true
         }
     }
 

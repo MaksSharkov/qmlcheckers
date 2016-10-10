@@ -23,7 +23,12 @@ void ChessBoard::initializeWithEmpty(int boardSize)
         }
 }
 
-bool ChessBoard::isMoveCorrect(Cell &from, Cell &to) const
+bool ChessBoard::isMoveCorrect(const Cell &from,const Cell &to) const
+{
+    return isMoveCorrect(from.toJson(),to.toJson());
+}
+
+bool ChessBoard::isMoveCorrect(const QJsonObject &from,const QJsonObject &to)const
 {
     return true;//TODO: implement
 }
