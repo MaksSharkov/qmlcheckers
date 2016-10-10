@@ -21,16 +21,24 @@ Server::Server(QHostAddress listenAddress,quint16 port)
     qDebug() << "Port: "<< this->serverPort();
     connect(this,SIGNAL(newConnection()),this,SLOT(acceptConnection()));
 
-    connect(this,SIGNAL(replyReceived(QWebSocket*,QJsonObject)),&m_manager,SLOT(onReplyReceived(QWebSocket*,QJsonObject)));
-    connect(&m_manager,SIGNAL(logined(QWebSocket*,QString)),this,SLOT(addClient(QWebSocket*,QString)));
-    connect(&m_manager,SIGNAL(loginDenied(QWebSocket*,QString)),this,SLOT(disconnectClient(QWebSocket*)));
-    connect(&m_manager,SIGNAL(sendReply(QWebSocket*,QJsonObject)),this,SLOT(sendReply(QWebSocket*,QJsonObject)));
+    connect(this,SIGNAL(replyReceived(QWebSocket*,QJsonObject,QString))
+            ,&m_manager,SLOT(onReplyReceived(QWebSocket*,QJsonObject)));
+    connect(&m_manager,SIGNAL(logined(QWebSocket*,QString))
+            ,this,SLOT(addClient(QWebSocket*,QString)));
+    connect(&m_manager,SIGNAL(loginDenied(QWebSocket*,QString))
+            ,this,SLOT(disconnectClient(QWebSocket*)));
+    connect(&m_manager,SIGNAL(sendReply(QWebSocket*,QJsonObject))
+            ,this,SLOT(sendReply(QWebSocket*,QJsonObject)));
 
-    connect(this,SIGNAL(replyReceived(QWebSocket*,QJsonObject)),&m_mainRoom,SLOT(onReplyReceived(QWebSocket*,QJsonObject)));
-    connect(&m_mainRoom,SIGNAL(sendReply(QWebSocket*,QJsonObject)),this,SLOT(sendReply(QWebSocket*,QJsonObject)));
+    connect(this,SIGNAL(replyReceived(QWebSocket*,QJsonObject,QString))
+            ,&m_mainRoom,SLOT(onReplyReceived(QWebSocket*,QJsonObject,QString)));
+    connect(&m_mainRoom,SIGNAL(sendReply(QWebSocket*,QJsonObject))
+            ,this,SLOT(sendReply(QWebSocket*,QJsonObject)));
 
-    connect(this,SIGNAL(clientAdded(QWebSocket*,QString)),&m_mainRoom,SLOT(addClient(QWebSocket*,QString)));
-    connect(this,SIGNAL(clientDisconnected(QWebSocket*,QString)),&m_mainRoom,SLOT(removeClient(QWebSocket*,QString)));
+    connect(this,SIGNAL(clientAdded(QWebSocket*,QString))
+            ,&m_mainRoom,SLOT(addClient(QWebSocket*,QString)));
+    connect(this,SIGNAL(clientDisconnected(QWebSocket*,QString))
+            ,&m_mainRoom,SLOT(removeClient(QWebSocket*,QString)));
 }
 
 void Server::acceptConnection()
@@ -55,7 +63,8 @@ void Server::acceptRequest(const QString &request)
     }
 
     QJsonObject reply=doc.object();
-    emit replyReceived(client,reply);
+    QString username=m_clients.key(client);
+    emit replyReceived(client,reply,username);
 }
 
 void Server::disconnectClient(QWebSocket* client)

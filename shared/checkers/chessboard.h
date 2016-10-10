@@ -22,8 +22,8 @@ public:
 
     Q_INVOKABLE void initialize(QJsonArray board,int boardSize);
     Q_INVOKABLE void initializeWithEmpty(int boardSize);
-    Q_INVOKABLE bool isMoveCorrect(const Cell &from,const Cell &to)const;
-    Q_INVOKABLE bool isMoveCorrect(const QJsonObject &from, const QJsonObject &to)const;
+    Q_INVOKABLE bool isMoveCorrect(const QString player,const Cell &from,const Cell &to)const;
+    Q_INVOKABLE bool isMoveCorrect(const QString player,const QJsonObject &from, const QJsonObject &to)const;
 
     int boardSize()const{
         return m_boardSize;
@@ -41,9 +41,9 @@ signals:
 public slots:
     void addMan(int row, int col, QString rank, QString player);
 
-    void moveMan(Cell &from, Cell &to);
-    void moveMan(int rowFrom, int colFrom, int rowTo, int colTo);
-    void moveMan(QJsonObject from,QJsonObject to);
+    void moveMan(const QString player,Cell &from, Cell &to);
+    void moveMan(const QString player,int rowFrom, int colFrom, int rowTo, int colTo);
+    void moveMan(const QString player,QJsonObject from,QJsonObject to);
 
     void clearFromMans();
     void clear();

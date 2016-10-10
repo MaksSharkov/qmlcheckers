@@ -23,12 +23,12 @@ void ChessBoard::initializeWithEmpty(int boardSize)
         }
 }
 
-bool ChessBoard::isMoveCorrect(const Cell &from,const Cell &to) const
+bool ChessBoard::isMoveCorrect(const QString player,const Cell &from,const Cell &to) const
 {
-    return isMoveCorrect(from.toJson(),to.toJson());
+    return isMoveCorrect(player,from.toJson(),to.toJson());
 }
 
-bool ChessBoard::isMoveCorrect(const QJsonObject &from,const QJsonObject &to)const
+bool ChessBoard::isMoveCorrect(const QString player,const QJsonObject &from,const QJsonObject &to)const
 {
     return true;//TODO: implement
 }
@@ -45,17 +45,17 @@ void ChessBoard::addMan(int row,int col,QString rank,QString player)
     cell->putMan(rank,player);
 }
 
-void ChessBoard::moveMan(Cell &from, Cell &to)
+void ChessBoard::moveMan(const QString player,Cell &from, Cell &to)
 {
-    moveMan(from.row(),from.col(),to.row(),to.col());
+    moveMan(player,from.row(),from.col(),to.row(),to.col());
 }
 
-void ChessBoard::moveMan(int rowFrom, int colFrom, int rowTo, int colTo)
+void ChessBoard::moveMan(const QString player,int rowFrom, int colFrom, int rowTo, int colTo)
 {
     Cell *from=cellAt(rowFrom,colFrom);
     Cell *to=cellAt(rowTo,colTo);
 
-    if(isMoveCorrect(*from,*to))
+    if(isMoveCorrect(player,*from,*to))
     {
         from->swapMans(*to);
         emit manMoved(*from,*to);
@@ -176,9 +176,9 @@ void ChessBoard::initialize(QJsonArray board,int boardSize)
     }
 }
 
-void ChessBoard::moveMan(QJsonObject from, QJsonObject to)
+void ChessBoard::moveMan(const QString player, QJsonObject from, QJsonObject to)
 {
-    moveMan(from["row"].toInt(),from["col"].toInt(),to["row"].toInt(),to["col"].toInt());
+    moveMan(player,from["row"].toInt(),from["col"].toInt(),to["row"].toInt(),to["col"].toInt());
 }
 
 void ChessBoard::setBoardSize(int boardSize)

@@ -16,7 +16,7 @@ CheckersBoard{
     property bool isInitialized: false
 
     function requestMove(sourceCell,destinationCell){
-        if(isMyTurnNow && isMoveCorrect(sourceCell,destinationCell)){
+        if(isMyTurnNow && isMoveCorrect(client.name,sourceCell,destinationCell)){
             var from={row:sourceCell.row,col:sourceCell.col}
             var to={row:destinationCell.row,col:destinationCell.col}
             var request={type:"moveMan",from:from,to:to}
@@ -29,7 +29,7 @@ CheckersBoard{
         if(reply["type"]==="moveMan"){
             var from=reply["from"]
             var to=reply["to"]
-            moveMan(from,to)
+            moveMan(client.name,from,to)
             isMyTurnNow= !isMyTurnNow
         }else if(reply["type"]==="gameInit"){
             var board=reply["board"]

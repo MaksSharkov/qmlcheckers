@@ -21,7 +21,7 @@ void Room::notifyAbout(const QJsonObject &message)
     }
 }
 
-void Room::onReplyReceived(QWebSocket *client,QJsonObject reply)
+void Room::onReplyReceived(QWebSocket *client, QJsonObject reply, QString username)
 {
     Q_UNUSED(client)
     if(reply["type"] == HoldemChat::ConferenceMessage::type){
@@ -30,7 +30,7 @@ void Room::onReplyReceived(QWebSocket *client,QJsonObject reply)
                     .arg(message.sender().name,message.conference().name,message.text())<<endl;
         notifyAbout(reply);
     }
-    m_game.onReplyReceived(client,reply);
+    m_game.onReplyReceived(client,reply,username);
 }
 
 void Room::addClient(QWebSocket *client, QString username)

@@ -30,7 +30,7 @@ signals:
     void gameEnded(QString winnersUsername);
 
 public slots:
-    void onReplyReceived(QWebSocket *client,QJsonObject reply);
+    void onReplyReceived(QWebSocket *client,QJsonObject reply,QString username);
     void onClientAdded(QWebSocket* client,QString username);
     void onClientRemoved(QWebSocket* client,QString username);
 

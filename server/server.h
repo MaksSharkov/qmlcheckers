@@ -21,7 +21,7 @@ public:
 
 signals:
 
-    void replyReceived(QWebSocket* client ,QJsonObject reply);
+    void replyReceived(QWebSocket* client ,QJsonObject reply,QString username);
     void clientAdded(QWebSocket* client,QString username);
     void clientDisconnected(QWebSocket* client,QString username);
 public slots:  

@@ -22,7 +22,7 @@ signals:
     void clientRemoved(QWebSocket* client,QString username);
 public slots:
 
-    void onReplyReceived(QWebSocket *client, QJsonObject reply);
+    void onReplyReceived(QWebSocket *client, QJsonObject reply,QString username);
     void notifyAbout(const QJsonObject &message);
 
     void addClient(QWebSocket* client,QString username);

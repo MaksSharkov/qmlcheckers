@@ -26,13 +26,13 @@ void CheckersGame::setBottomPlayer(QString username)
     }
 }
 
-void CheckersGame::onReplyReceived(QWebSocket *client, QJsonObject reply)
+void CheckersGame::onReplyReceived(QWebSocket *client, QJsonObject reply, QString username)
 {
     Q_UNUSED(client)
     if(reply["type"]=="moveMan"){
         QJsonObject from=reply["from"].toObject();
         QJsonObject to=reply["to"].toObject();
-        m_board.moveMan(from,to);
+        m_board.moveMan(username,from,to);
     }
 }
 
