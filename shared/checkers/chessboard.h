@@ -41,7 +41,6 @@ signals:
 public slots:
     void addMan(int row, int col, QString rank, QString player);
 
-    void moveMan(const QString player,Cell &from, Cell &to);
     void moveMan(const QString player,int rowFrom, int colFrom, int rowTo, int colTo);
     void moveMan(const QString player,QJsonObject from,QJsonObject to);
 

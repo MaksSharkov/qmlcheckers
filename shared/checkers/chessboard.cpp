@@ -28,6 +28,7 @@ bool ChessBoard::isMoveCorrect(const QString player,const Cell &from,const Cell 
     return isMoveCorrect(player,from.toJson(),to.toJson());
 }
 
+
 bool ChessBoard::isMoveCorrect(const QString player,const QJsonObject &from,const QJsonObject &to)const
 {
     return true;//TODO: implement
@@ -43,11 +44,6 @@ void ChessBoard::addMan(int row,int col,QString rank,QString player)
 {
     Cell *cell=cellAt(row,col);
     cell->putMan(rank,player);
-}
-
-void ChessBoard::moveMan(const QString player,Cell &from, Cell &to)
-{
-    moveMan(player,from.row(),from.col(),to.row(),to.col());
 }
 
 void ChessBoard::moveMan(const QString player,int rowFrom, int colFrom, int rowTo, int colTo)
