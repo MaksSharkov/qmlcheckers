@@ -16,8 +16,7 @@ CheckersBoard{
     property bool isInitialized: false
 
     function requestMove(sourceCell,destinationCell){
-//        if(isMoveCorrect(sourceCell,destinationCell)){
-        if(isMyTurnNow){
+        if(isMyTurnNow && isMoveCorrect(sourceCell,destinationCell)){
             var from={row:sourceCell.row,col:sourceCell.col}
             var to={row:destinationCell.row,col:destinationCell.col}
             var request={type:"moveMan",from:from,to:to}
