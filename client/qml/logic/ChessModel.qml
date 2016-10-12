@@ -30,7 +30,9 @@ CheckersBoard{
             var from=reply["from"]
             var to=reply["to"]
             moveMan(reply["player"],from,to)
-            isMyTurnNow= !isMyTurnNow
+            if(role !== "spectator")
+                isMyTurnNow= !isMyTurnNow
+
         }else if(reply["type"]==="gameInit"){
             var board=reply["board"]
             var boardSize=reply["boardSize"]

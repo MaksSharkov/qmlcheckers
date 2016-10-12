@@ -18,6 +18,7 @@ ColumnLayout {
         loginName: loginField.text
         password: passwordField.text
         onLogined: loginPage.logined()
+
     }
 
     TextField {
@@ -39,8 +40,9 @@ ColumnLayout {
             text: qsTr("Login")
             onClicked: {
                 errorLine.text = ""
-                client.hostUrl="ws://"+serverIpField.text+":"+serverPortBox.value
-                client.activate
+                var url="ws://"+serverIpField.text+":"+serverPortBox.value
+                client.hostUrl=url
+                client.activate()
             }
         }
 
@@ -67,22 +69,19 @@ ColumnLayout {
         TextField {
             id: serverIpField
             text: "127.0.0.1"
-            validator:RegExpValidator
-            {
-            regExp:/\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}\b/
+        }
+        SpinBox {
+            id: serverPortBox
+            Layout.alignment: Qt.AlignHCenter
+            value: 8080
+            to: 655535
         }
     }
-    SpinBox {
-        id: serverPortBox
-        Layout.alignment: Qt.AlignHCenter
-        value: 8080
-        to: 655535
-    }
-}
 
     Connections{
-    target: client
-    onConnected: loginer.login()
-}
+        target: client
+        onConnected: loginer.login()
+    }
+
 }
 

@@ -44,8 +44,11 @@ public slots:
 private slots:
     void onManMoved(Cell &from, Cell &to);
     void endGame(QString winnersUsername);
+
 private:
     ChessBoard m_board;
+
+    bool m_isBottomPlayerTurnNow;
 
     QString topPlayerUsername;
     QString bottomPlayerUsername;

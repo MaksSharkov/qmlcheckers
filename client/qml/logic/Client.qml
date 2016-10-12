@@ -6,7 +6,6 @@ Item {
 
     property string name
     property alias hostUrl: socket.url
-    property alias isActive: socket.active
 
     signal errorOccured(string errorMessage)
     signal disconnected()
@@ -15,16 +14,17 @@ Item {
 
     WebSocket{
         id:socket
-        active:false
+        active:true
         onStatusChanged: {
             if (status == WebSocket.Error) {
                                      errorOccured("Error: " + socket.errorString)
-                                     deactivate()
+                                     active=false
                                  } else if (socket.status === WebSocket.Open) {
+                                     console.debug("connected.")
                                      connected()
                                  } else if (socket.status === WebSocket.Closed) {
                                      disconnected()
-                                     deactivate()
+                                     active=false
                                  }
         }
 
@@ -44,12 +44,7 @@ Item {
         socket.sendTextMessage(jsonMessage)
     }
 
-    function deactivate(){
-        isActive =false
-    }
-
     function activate(){
-        isActive = true
+        socket.active = true
     }
-
 }

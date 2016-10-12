@@ -9,13 +9,14 @@ Item {
     signal logined()
 
     function login(){
+        console.log("loggining")
         var message={type:"loginRequest" ,login:loginName ,password:password}
         client.send(message)
     }
 
     function parseLoginReply(message){
-        if(message["type"]=="loginReply"){
-            if(message["verdict"] == "true"){
+        if(message["type"]==="loginReply"){
+            if(message["verdict"] === "true"){
                 logined()
             }else{
                 client.errorOccured(message["reason"])

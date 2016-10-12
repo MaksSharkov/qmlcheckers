@@ -23,13 +23,14 @@ ApplicationWindow {
         anchors.centerIn: parent
         onLogined: {
             console.log("logined.")
-            switchToChat()
+            switchToMainPage()
         }
         Connections{
             target:client
             onErrorOccured:{
                 loginPage.errorMessage = errorMessage
             }
+            onDisconnected: onDisconnected()
         }
     }
 
@@ -40,9 +41,15 @@ ApplicationWindow {
         visible: false
     }
 
-    function switchToChat(){
+    function switchToMainPage(){
         loginPage.visible = false
         gameScreen.visible = true
+    }
+
+    function onDisconnected(){
+        loginPage.errorMessage = "Disconnected from server"
+        loginPage.visible = true
+        gameScreen.visible = false
     }
 
 }
