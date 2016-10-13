@@ -34,7 +34,7 @@ Item {
                 replyReceived(received)
             }catch(error){
                 errorOccured("Error while parsing login reply.")
-                deactivate()
+                socket.active=false
             }
         }
     }

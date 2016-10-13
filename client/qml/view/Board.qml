@@ -82,7 +82,7 @@ GridView{
                                     : cell.man["whoose"] === "topPlayer"
             MouseArea{
                 anchors.fill: parent
-                enabled: parent.isMine
+                enabled: parent.isMine && checkersModel.isMyTurnNow
                 onClicked:{
                     grid.currentIndex = model.index
                 }
