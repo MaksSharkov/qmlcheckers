@@ -1,9 +1,7 @@
 import qbs
 
-Product {
-    type: "application"
+CppApplication {
     name: "client"
-    Depends { name: "cpp" }
     Depends { name: "Qt"; submodules: ["qml", "quick"] }
 
     Depends { name: "shared" }

@@ -1,23 +1,23 @@
 import qbs
 
-Product {
-    type: "application"
+CppApplication {
     name: "server"
     consoleApplication: true
-    Depends { name: "cpp" }
     Depends { name: "Qt"; submodules: ["core", "websockets"] }
 
     Depends{ name: "shared"}
 
+    cpp.includePaths: "include/"
     files: [
-        "checkersgame.cpp",
-        "checkersgame.h",
-        "loginmanager.cpp",
-        "loginmanager.h",
-        "main.cpp",
-        "room.cpp",
-        "room.h",
-        "server.cpp",
-        "server.h",
+        "include/checkersgame.h",
+        "include/loginmanager.h",
+        "include/room.h",
+        "include/server.h",
+        "src/checkersgame.cpp",
+        "src/loginmanager.cpp",
+        "src/main.cpp",
+        "src/room.cpp",
+        "src/server.cpp",
     ]
+
 }
