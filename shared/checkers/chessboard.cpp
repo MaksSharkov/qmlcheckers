@@ -311,6 +311,7 @@ QMap<Cell,bool> ChessBoard::getAvailableMoves(const Cell &from)const{
 QMap<Cell,bool> ChessBoard::getAvaibleMovesForMan(const Cell &from)const
 {
     assert(!from.isEmpty());
+    assert(from.isBlack());
 
     const QString player=from.man()["whoose"].toString();
 
@@ -322,7 +323,7 @@ QMap<Cell,bool> ChessBoard::getAvaibleMovesForMan(const Cell &from)const
         if(topLeft.isEmpty() && (player=="bottomPlayer")){
             result.insert(topLeft,false);
         }else{
-            if(!topLeft.belongsTo(player)){
+            if(!topLeft.belongsTo(player)&& !topLeft.isEmpty()){
                 const Cell &topLeft2=getTopLeft(topLeft,defaultValue);
                 if(topLeft2 != defaultValue)
                     if(topLeft2.isEmpty())
@@ -336,7 +337,7 @@ QMap<Cell,bool> ChessBoard::getAvaibleMovesForMan(const Cell &from)const
         if(topRight.isEmpty() && (player=="bottomPlayer") ){
             result.insert(topRight,false);
         }else{
-            if(!topRight.belongsTo(player)){
+            if(!topRight.belongsTo(player) && !topRight.isEmpty()){
                 const Cell &topRight2=getTopRight(topRight,defaultValue);
                 if(topRight2 != defaultValue)
                     if(topRight2.isEmpty())
@@ -350,7 +351,7 @@ QMap<Cell,bool> ChessBoard::getAvaibleMovesForMan(const Cell &from)const
         if(bottomLeft.isEmpty() && (player=="topPlayer")){
             result.insert(bottomLeft,false);
         }else{
-            if(!bottomLeft.belongsTo(player)){
+            if(!bottomLeft.belongsTo(player) && !bottomLeft.isEmpty()){
                 const Cell &bottomLeft2=getBottomLeft(bottomLeft,defaultValue);
                 if(bottomLeft2 != defaultValue)
                     if(bottomLeft2.isEmpty())
@@ -364,7 +365,7 @@ QMap<Cell,bool> ChessBoard::getAvaibleMovesForMan(const Cell &from)const
         if(bottomRight.isEmpty() && (player=="topPlayer")){
             result.insert(bottomRight,false);
         }else{
-            if(!bottomRight.belongsTo(player)){
+            if(!bottomRight.belongsTo(player) && !bottomRight.isEmpty()){
                 const Cell &bottomRight2=getBottomRight(bottomRight,defaultValue);
                 if(bottomRight2 != defaultValue)
                     if(bottomRight2.isEmpty())
