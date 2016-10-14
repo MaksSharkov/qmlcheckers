@@ -24,6 +24,7 @@ public:
     Q_INVOKABLE void initializeWithEmpty(int boardSize);
     Q_INVOKABLE bool isMoveCorrect(const QString player,const Cell &from,const Cell &to)const;
     Q_INVOKABLE bool isMoveCorrect(const QString player,const QJsonObject &from, const QJsonObject &to)const;
+    Q_INVOKABLE QVector<Cell> getAvaibleMoves(const Cell &from)const;
 
     int boardSize()const{
         return m_boardSize;
@@ -33,10 +34,15 @@ public:
     Q_INVOKABLE int indexOf(int row,int col) const;
     Q_INVOKABLE QJsonObject get(int index);
 
+    Q_INVOKABLE bool isOnTopBorder(const Cell &cell)const;
+    Q_INVOKABLE bool isOnBottomBorder(const Cell &cell)const;
+    Q_INVOKABLE bool isOnLeftBorder(const Cell &cell)const;
+    Q_INVOKABLE bool isOnRightBorder(const Cell &cell)const;
+
     virtual int rowCount(const QModelIndex &parent) const;
     virtual QVariant data(const QModelIndex &index, int role) const;
 signals:
-    void manMoved(Cell &from,Cell &to);
+    void manMoved(QString player,Cell &from,Cell &to);
     void boardSizeChanged(int);
 public slots:
     void addMan(int row, int col, QString rank, QString player);
@@ -55,6 +61,13 @@ private slots:
     void setBoardSize(int boardSize);
 private:
     void initRoles();
+    QVector<Cell> getAvaibleMovesForMan(const Cell &from) const;
+
+    const Cell &getTopLeft(const Cell &from,const Cell &defaultValue)const;
+    const Cell& getBottomLeft(const Cell &from,const Cell &defaultValue)const;
+    const Cell& getTopRight(const Cell &from,const Cell &defaultValue)const;
+    const Cell& getBottomRight(const Cell &from,const Cell &defaultValue)const;
+
 
 private:
     QVector<Cell> m_board;

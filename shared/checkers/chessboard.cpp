@@ -40,17 +40,10 @@ bool ChessBoard::isMoveCorrect(const QString player,const Cell &from,const Cell 
     }else if(!to.isBlack()){
         qDebug()<<"Attempt to move man to non-black cell"<<endl;
         return false;
-    }else if(from.containsMan()){
-        int distanseRow=to.row()-from.row();
-        int distanseCol=abs(to.col()-from.col());
-        if((distanseCol!=1)||((player=="bottomPlayer" && distanseRow != 1)
-                ||(player=="topPlayer" && distanseRow != -1))){
-                qDebug()<<"Attempt to move man farther that it can be moved"<<endl;
-                return false;
-            }
+    }else{
+        QVector<Cell> avaible=getAvaibleMoves(from);
+        return avaible.contains(to);
     }
-
-    return true;
 }
 
 
@@ -72,8 +65,15 @@ void ChessBoard::moveMan(const QString player,int rowFrom, int colFrom, int rowT
     Cell &to=m_board[indexOf(rowTo,colTo)];
     if(isMoveCorrect(player,from,to))
     {
+        if(!from.isNear(to)){
+            if(from.containsMan()){
+                int purgedManRow=(from.row()+to.row())/2;
+                int purgedManCol=(from.col()+to.col())/2;
+                m_board[indexOf(purgedManRow,purgedManCol)].purgeMan();
+            }
+        }
         from.swapMans(to);
-        emit manMoved(from,to);
+        emit manMoved(player,from,to);
     }
 }
 
@@ -204,4 +204,131 @@ void ChessBoard::setBoardSize(int boardSize)
         m_boardSize=boardSize;
         emit boardSizeChanged(m_boardSize);
     }
+}
+
+bool ChessBoard::isOnTopBorder(const Cell &cell) const
+{
+    return cell.row() == (m_boardSize-1);
+}
+
+bool ChessBoard::isOnBottomBorder(const Cell &cell) const
+{
+    return cell.row() == 0;
+}
+
+bool ChessBoard::isOnLeftBorder(const Cell &cell) const
+{
+    return cell.col() == 0;
+}
+
+bool ChessBoard::isOnRightBorder(const Cell &cell) const
+{
+    return cell.col() == (m_boardSize-1);
+}
+
+Cell const& ChessBoard::getTopLeft(const Cell &from,const Cell &defaultValue) const
+{
+    if(!(isOnTopBorder(from) || isOnLeftBorder(from)))
+        return m_board[indexOf(from.row()+1,from.col()-1)];
+    else
+        return defaultValue;
+}
+
+Cell const& ChessBoard::getBottomLeft(const Cell &from,const Cell &defaultValue) const
+{
+    if(!(isOnBottomBorder(from) || isOnLeftBorder(from)))
+        return m_board[indexOf(from.row()-1,from.col()-1)];
+    else
+        return defaultValue;
+}
+
+Cell const& ChessBoard::getTopRight(const Cell &from,const Cell &defaultValue) const
+{
+    if(!(isOnTopBorder(from) || isOnRightBorder(from)))
+        return m_board[indexOf(from.row()+1,from.col()+1)];
+    else
+        return defaultValue;
+}
+
+Cell const& ChessBoard::getBottomRight(const Cell &from,const Cell &defaultValue) const
+{
+    if(!(isOnBottomBorder(from) || isOnRightBorder(from)))
+        return m_board[indexOf(from.row()-1,from.col()+1)];
+    else
+        return defaultValue;
+}
+
+QVector<Cell> ChessBoard::getAvaibleMoves(const Cell &from)const{
+    if(from.containsMan())
+        return getAvaibleMovesForMan(from);
+    else
+        return QVector<Cell>();
+}
+
+QVector<Cell> ChessBoard::getAvaibleMovesForMan(const Cell &from)const
+{
+    assert(!from.isEmpty());
+
+    const QString player=from.man()["whoose"].toString();
+
+    QVector<Cell> result;
+    const Cell& defaultValue=m_board.at(1);
+
+    const Cell &topLeft=getTopLeft(from,defaultValue);
+    if(topLeft != defaultValue){
+        if(topLeft.isEmpty() && (player=="bottomPlayer")){
+            result.append(topLeft);
+        }else{
+            if(!topLeft.belongsTo(player)){
+                const Cell &topLeft2=getTopLeft(topLeft,defaultValue);
+                if(topLeft2 != defaultValue)
+                    if(topLeft2.isEmpty())
+                        result.append(topLeft2);
+            }
+        }
+    }
+
+    const Cell &topRight=getTopRight(from,defaultValue);
+    if(topRight != defaultValue){
+        if(topRight.isEmpty() && (player=="bottomPlayer") ){
+            result.append(topRight);
+        }else{
+            if(!topRight.belongsTo(player)){
+                const Cell &topRight2=getTopRight(topRight,defaultValue);
+                if(topRight2 != defaultValue)
+                    if(topRight2.isEmpty())
+                        result.append(topRight2);
+            }
+        }
+    }
+
+    const Cell &bottomLeft=getBottomLeft(from,defaultValue);
+    if(bottomLeft != defaultValue){
+        if(bottomLeft.isEmpty() && (player=="topPlayer")){
+            result.append(bottomLeft);
+        }else{
+            if(!bottomLeft.belongsTo(player)){
+                const Cell &bottomLeft2=getBottomLeft(bottomLeft,defaultValue);
+                if(bottomLeft2 != defaultValue)
+                    if(bottomLeft2.isEmpty())
+                        result.append(bottomLeft2);
+            }
+        }
+    }
+
+    const Cell &bottomRight=getBottomRight(from,defaultValue);
+    if(bottomRight != defaultValue){
+        if(bottomRight.isEmpty() && (player=="topPlayer")){
+            result.append(bottomRight);
+        }else{
+            if(!bottomRight.belongsTo(player)){
+                const Cell &bottomRight2=getBottomRight(bottomRight,defaultValue);
+                if(bottomRight2 != defaultValue)
+                    if(bottomRight2.isEmpty())
+                        result.append(bottomRight2);
+            }
+        }
+    }
+
+    return result;
 }

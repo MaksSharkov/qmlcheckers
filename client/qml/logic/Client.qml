@@ -16,7 +16,7 @@ Item {
         id:socket
         active:true
         onStatusChanged: {
-            if (status == WebSocket.Error) {
+            if (status === WebSocket.Error) {
                                      errorOccured("Error: " + socket.errorString)
                                      active=false
                                  } else if (socket.status === WebSocket.Open) {

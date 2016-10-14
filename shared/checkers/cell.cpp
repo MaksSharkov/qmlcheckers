@@ -1,6 +1,7 @@
 #include "cell.h"
 
 #include "assert.h"
+#include "math.h"
 
 Cell::Cell(int row, int col, QObject *parent)
     : QObject(parent)
@@ -115,7 +116,17 @@ void Cell::setMan(const QJsonObject &man)
     putMan(man["rank"].toString(),man["whoose"].toString());
 }
 
-bool Cell::operator ==(const Cell &other)
+bool Cell::operator ==(const Cell &other)const
 {
     return (m_col==other.m_col) && (m_row == other.m_row) && (m_man == other.m_man);
+}
+
+bool Cell::operator !=(const Cell &other)const
+{
+    return !operator==(other);
+}
+
+bool Cell::isNear(const Cell &other)const
+{
+    return (abs(other.m_row-m_row)==1)&&(abs(other.m_col-m_col)==1);
 }
