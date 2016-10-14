@@ -5,6 +5,7 @@
 
 ChessBoard::ChessBoard(int boardSize, QObject *parent)
     : QAbstractListModel(parent)
+    , m_continiousMoveCell(nullptr)
 {
     initializeWithEmpty(boardSize);
 }
@@ -34,11 +35,14 @@ bool ChessBoard::isMoveCorrect(const QString player,const Cell &from,const Cell 
     }else if(from.isEmpty()){
         qDebug()<<"Attempt to move man to empty cell"<<endl;
         return false;
-    }else if(from.row() == to.row() && from.col() == from.col()){
+    }else if(from.row() == to.row() && from.col() == to.col()){
         qDebug()<<"Attempt to move man to its current location"<<endl;
         return false;
     }else if(!to.isBlack()){
         qDebug()<<"Attempt to move man to non-black cell"<<endl;
+        return false;
+    }else if(m_continiousMoveCell != nullptr && m_continiousMoveCell != &from){
+        qDebug()<<"Attempt to move separate man while player must eat further";
         return false;
     }else{
         QMap<Cell,bool> available=getAvailableMoves(from);
@@ -90,17 +94,29 @@ void ChessBoard::moveMan(const QString player,int rowFrom, int colFrom, int rowT
 {
     Cell &from=m_board[indexOf(rowFrom,colFrom)];
     Cell &to=m_board[indexOf(rowTo,colTo)];
+
     if(isMoveCorrect(player,from,to))
     {
+        from.swapMans(to);
+
+        bool mustEatFurther = false;
+
         if(!from.isNear(to)){
-            if(from.containsMan()){
+
+            //Purge man,that has being eaten
+            if(to.containsMan()){
                 int purgedManRow=(from.row()+to.row())/2;
                 int purgedManCol=(from.col()+to.col())/2;
                 m_board[indexOf(purgedManRow,purgedManCol)].purgeMan();
             }
+
+            //Handle multy-cell moves
+            mustEatFurther = getAvailableMoves(to).values().contains(true);
+            m_continiousMoveCell = mustEatFurther ? &to : nullptr;
         }
-        from.swapMans(to);
-        emit manMoved(player,from,to);
+
+        qDebug()<<"MustEatFurther="<<mustEatFurther;
+        emit manMoved(player,from,to,!mustEatFurther);
     }
 }
 

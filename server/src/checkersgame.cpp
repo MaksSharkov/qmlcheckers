@@ -5,8 +5,8 @@ CheckersGame::CheckersGame(QObject *parent)
     , m_board(8,this)
     , m_isBottomPlayerTurnNow(false)
 {
-    connect(&m_board,SIGNAL(manMoved(QString,Cell&,Cell&))
-            ,this,SLOT(onManMoved(QString,Cell&,Cell&)));
+    connect(&m_board,SIGNAL(manMoved(QString,Cell&,Cell&,bool))
+            ,this,SLOT(onManMoved(QString,Cell&,Cell&,bool)));
 }
 
 void CheckersGame::setTopPlayer(QString username)
@@ -47,16 +47,19 @@ void CheckersGame::onReplyReceived(QWebSocket *client, QJsonObject reply, QStrin
     }
 }
 
-void CheckersGame::onManMoved(QString player,Cell &from, Cell &to)
+void CheckersGame::onManMoved(QString player, Cell &from, Cell &to, bool giveTurnToNext)
 {
-    m_isBottomPlayerTurnNow=!m_isBottomPlayerTurnNow;
+    if(giveTurnToNext)
+        m_isBottomPlayerTurnNow=!m_isBottomPlayerTurnNow;
+
     QJsonObject message;
     message["type"]="moveMan";
     message["from"]=from.toJson();
     message["to"]=to.toJson();
     message["player"]=player;
+    message["switchTurn"]=giveTurnToNext;
 
-    qDebug()<<"Man moved from"<<message["from"].toString()<<" to "<<message["to"].toString();
+    qDebug()<<"Man moved from"<<message["from"]<<" to "<<message["to"];
     emit notifyAbout(message);
 }
 

@@ -43,7 +43,7 @@ public:
     virtual int rowCount(const QModelIndex &parent) const;
     virtual QVariant data(const QModelIndex &index, int role) const;
 signals:
-    void manMoved(QString player,Cell &from,Cell &to);
+    void manMoved(QString player,Cell &from,Cell &to,bool giveTurnToNext);
     void boardSizeChanged(int);
 public slots:
     void addMan(int row, int col, QString rank, QString player);
@@ -74,6 +74,7 @@ private:
 
 private:
     QVector<Cell> m_board;
+    Cell* m_continiousMoveCell;
     int m_boardSize;
 
     QHash<int, QByteArray> m_roleNames;

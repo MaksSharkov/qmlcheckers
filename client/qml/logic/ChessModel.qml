@@ -29,8 +29,9 @@ CheckersBoard{
         if(reply["type"]==="moveMan"){
             var from=reply["from"]
             var to=reply["to"]
+            var switchTurn = reply["switchTurn"]
             moveMan(reply["player"],from,to)
-            if(role !== "spectator")
+            if(role !== "spectator" && switchTurn)
                 isMyTurnNow= !isMyTurnNow
 
         }else if(reply["type"]==="gameInit"){

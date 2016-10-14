@@ -42,7 +42,7 @@ public slots:
 
     void initializeGame();
 private slots:
-    void onManMoved(QString player,Cell &from, Cell &to);
+    void onManMoved(QString player,Cell &from, Cell &to,bool giveTurnToNext);
     void endGame(QString winnersUsername);
 
 private:
