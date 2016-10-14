@@ -41,11 +41,38 @@ bool ChessBoard::isMoveCorrect(const QString player,const Cell &from,const Cell 
         qDebug()<<"Attempt to move man to non-black cell"<<endl;
         return false;
     }else{
-        QVector<Cell> avaible=getAvaibleMoves(from);
-        return avaible.contains(to);
+        QMap<Cell,bool> available=getAvailableMoves(from);
+        if(available.contains(to)){
+            if(mustEat(player)){
+                if(available.value(to))
+                    return true;
+                else{
+                    qDebug()<<"Attempted to move while player must eat."<<endl;
+                    return false;
+                }
+            }else{
+                return true;
+            }
+        }else{
+            qDebug()<<"Attempt to move in not acceptable cell."<<endl;
+            return false;
+        }
     }
 }
 
+bool ChessBoard::mustEat(const QString player)const
+{
+    bool result=false;
+    foreach(const Cell& cell,m_board)
+        if(cell.belongsTo(player)){
+            QMap<Cell,bool> availableMoves=getAvailableMoves(cell);
+            if(availableMoves.values().contains(true)){
+                result=true;
+                break;
+            }
+        }
+    return result;
+}
 
 bool ChessBoard::isMoveCorrect(const QString player,const QJsonObject &from,const QJsonObject &to)const
 {
@@ -258,32 +285,32 @@ Cell const& ChessBoard::getBottomRight(const Cell &from,const Cell &defaultValue
         return defaultValue;
 }
 
-QVector<Cell> ChessBoard::getAvaibleMoves(const Cell &from)const{
+QMap<Cell,bool> ChessBoard::getAvailableMoves(const Cell &from)const{
     if(from.containsMan())
         return getAvaibleMovesForMan(from);
     else
-        return QVector<Cell>();
+        return QMap<Cell,bool>();
 }
 
-QVector<Cell> ChessBoard::getAvaibleMovesForMan(const Cell &from)const
+QMap<Cell,bool> ChessBoard::getAvaibleMovesForMan(const Cell &from)const
 {
     assert(!from.isEmpty());
 
     const QString player=from.man()["whoose"].toString();
 
-    QVector<Cell> result;
+    QMap<Cell,bool> result;
     const Cell& defaultValue=m_board.at(1);
 
     const Cell &topLeft=getTopLeft(from,defaultValue);
     if(topLeft != defaultValue){
         if(topLeft.isEmpty() && (player=="bottomPlayer")){
-            result.append(topLeft);
+            result.insert(topLeft,false);
         }else{
             if(!topLeft.belongsTo(player)){
                 const Cell &topLeft2=getTopLeft(topLeft,defaultValue);
                 if(topLeft2 != defaultValue)
                     if(topLeft2.isEmpty())
-                        result.append(topLeft2);
+                        result.insert(topLeft2,true);
             }
         }
     }
@@ -291,13 +318,13 @@ QVector<Cell> ChessBoard::getAvaibleMovesForMan(const Cell &from)const
     const Cell &topRight=getTopRight(from,defaultValue);
     if(topRight != defaultValue){
         if(topRight.isEmpty() && (player=="bottomPlayer") ){
-            result.append(topRight);
+            result.insert(topRight,false);
         }else{
             if(!topRight.belongsTo(player)){
                 const Cell &topRight2=getTopRight(topRight,defaultValue);
                 if(topRight2 != defaultValue)
                     if(topRight2.isEmpty())
-                        result.append(topRight2);
+                        result.insert(topRight2,true);
             }
         }
     }
@@ -305,13 +332,13 @@ QVector<Cell> ChessBoard::getAvaibleMovesForMan(const Cell &from)const
     const Cell &bottomLeft=getBottomLeft(from,defaultValue);
     if(bottomLeft != defaultValue){
         if(bottomLeft.isEmpty() && (player=="topPlayer")){
-            result.append(bottomLeft);
+            result.insert(bottomLeft,false);
         }else{
             if(!bottomLeft.belongsTo(player)){
                 const Cell &bottomLeft2=getBottomLeft(bottomLeft,defaultValue);
                 if(bottomLeft2 != defaultValue)
                     if(bottomLeft2.isEmpty())
-                        result.append(bottomLeft2);
+                        result.insert(bottomLeft2,true);
             }
         }
     }
@@ -319,13 +346,13 @@ QVector<Cell> ChessBoard::getAvaibleMovesForMan(const Cell &from)const
     const Cell &bottomRight=getBottomRight(from,defaultValue);
     if(bottomRight != defaultValue){
         if(bottomRight.isEmpty() && (player=="topPlayer")){
-            result.append(bottomRight);
+            result.insert(bottomRight,false);
         }else{
             if(!bottomRight.belongsTo(player)){
                 const Cell &bottomRight2=getBottomRight(bottomRight,defaultValue);
                 if(bottomRight2 != defaultValue)
                     if(bottomRight2.isEmpty())
-                        result.append(bottomRight2);
+                        result.insert(bottomRight2,true);
             }
         }
     }

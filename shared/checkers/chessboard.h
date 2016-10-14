@@ -3,6 +3,7 @@
 
 #include <QAbstractListModel>
 #include <QVector>
+#include <QMap>
 #include <QJsonArray>
 #include <QJsonObject>
 
@@ -24,7 +25,7 @@ public:
     Q_INVOKABLE void initializeWithEmpty(int boardSize);
     Q_INVOKABLE bool isMoveCorrect(const QString player,const Cell &from,const Cell &to)const;
     Q_INVOKABLE bool isMoveCorrect(const QString player,const QJsonObject &from, const QJsonObject &to)const;
-    Q_INVOKABLE QVector<Cell> getAvaibleMoves(const Cell &from)const;
+    Q_INVOKABLE QMap<Cell,bool> getAvailableMoves(const Cell &from)const;
 
     int boardSize()const{
         return m_boardSize;
@@ -61,7 +62,9 @@ private slots:
     void setBoardSize(int boardSize);
 private:
     void initRoles();
-    QVector<Cell> getAvaibleMovesForMan(const Cell &from) const;
+    QMap<Cell,bool>  getAvaibleMovesForMan(const Cell &from) const;
+
+    bool mustEat(const QString player) const;
 
     const Cell &getTopLeft(const Cell &from,const Cell &defaultValue)const;
     const Cell& getBottomLeft(const Cell &from,const Cell &defaultValue)const;

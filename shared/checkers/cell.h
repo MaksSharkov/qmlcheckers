@@ -39,6 +39,7 @@ public:
     Cell& operator=(const Cell &second);
     bool operator==(const Cell &other)const;
     bool operator!=(const Cell &other)const;
+    bool operator<(const Cell &other)const;
     bool isNear(const Cell &other) const;
 
     Q_INVOKABLE bool containsMan()const{

@@ -130,3 +130,8 @@ bool Cell::isNear(const Cell &other)const
 {
     return (abs(other.m_row-m_row)==1)&&(abs(other.m_col-m_col)==1);
 }
+
+bool Cell::operator <(const Cell &other)const
+{
+    return m_row < other.m_row;
+}
