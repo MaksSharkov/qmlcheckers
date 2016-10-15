@@ -314,75 +314,48 @@ Cell const& ChessBoard::getBottomRight(const Cell &from,const Cell &defaultValue
 QMap<Cell,bool> ChessBoard::getAvailableMoves(const Cell &from)const{
     if(from.containsMan())
         return getAvaibleMovesForMan(from);
+    else if(from.containsKing())
+        return getAvaibleMovesForKing(from);
     else
         return QMap<Cell,bool>();
 }
 
-QMap<Cell,bool> ChessBoard::getAvaibleMovesForMan(const Cell &from)const
+void ChessBoard::getDiagonalMove(const Cell &from, QMap<Cell,bool> &result, const QString allowedToMovePlayer
+                                 ,const std::function<Cell const&(const ChessBoard*, const Cell &,const Cell &)> &diagonalGetter) const
 {
-    assert(!from.isEmpty());
-    assert(from.isBlack());
-
     const QString player=from.man()["whoose"].toString();
-
-    QMap<Cell,bool> result;
     const Cell& defaultValue=m_board.at(1);
 
-    const Cell &topLeft=getTopLeft(from,defaultValue);
-    if(topLeft != defaultValue){
-        if(topLeft.isEmpty() && (player=="bottomPlayer")){
-            result.insert(topLeft,false);
+    const Cell &diagonalCell=diagonalGetter(this,from,defaultValue);
+    if(diagonalCell != defaultValue){
+        if(diagonalCell.isEmpty() && (player==allowedToMovePlayer)){
+            result.insert(diagonalCell,false);
         }else{
-            if(!topLeft.belongsTo(player)&& !topLeft.isEmpty()){
-                const Cell &topLeft2=getTopLeft(topLeft,defaultValue);
-                if(topLeft2 != defaultValue)
-                    if(topLeft2.isEmpty())
-                        result.insert(topLeft2,true);
+            if(!diagonalCell.belongsTo(player)&& !diagonalCell.isEmpty()){
+                const Cell &diagonalCell2=diagonalGetter(this,diagonalCell,defaultValue);
+                if(diagonalCell2 != defaultValue)
+                    if(diagonalCell2.isEmpty())
+                        result.insert(diagonalCell2,true);
             }
         }
     }
+}
 
-    const Cell &topRight=getTopRight(from,defaultValue);
-    if(topRight != defaultValue){
-        if(topRight.isEmpty() && (player=="bottomPlayer") ){
-            result.insert(topRight,false);
-        }else{
-            if(!topRight.belongsTo(player) && !topRight.isEmpty()){
-                const Cell &topRight2=getTopRight(topRight,defaultValue);
-                if(topRight2 != defaultValue)
-                    if(topRight2.isEmpty())
-                        result.insert(topRight2,true);
-            }
-        }
-    }
+QMap<Cell,bool> ChessBoard::getAvaibleMovesForMan(const Cell &from)const
+{
+    QMap<Cell,bool> result;
 
-    const Cell &bottomLeft=getBottomLeft(from,defaultValue);
-    if(bottomLeft != defaultValue){
-        if(bottomLeft.isEmpty() && (player=="topPlayer")){
-            result.insert(bottomLeft,false);
-        }else{
-            if(!bottomLeft.belongsTo(player) && !bottomLeft.isEmpty()){
-                const Cell &bottomLeft2=getBottomLeft(bottomLeft,defaultValue);
-                if(bottomLeft2 != defaultValue)
-                    if(bottomLeft2.isEmpty())
-                        result.insert(bottomLeft2,true);
-            }
-        }
-    }
+    getDiagonalMove(from,result,"bottomPlayer",&ChessBoard::getTopLeft);
+    getDiagonalMove(from,result,"bottomPlayer",&ChessBoard::getTopRight);
+    getDiagonalMove(from,result,"topPlayer",&ChessBoard::getBottomLeft);
+    getDiagonalMove(from,result,"topPlayer",&ChessBoard::getBottomRight);
 
-    const Cell &bottomRight=getBottomRight(from,defaultValue);
-    if(bottomRight != defaultValue){
-        if(bottomRight.isEmpty() && (player=="topPlayer")){
-            result.insert(bottomRight,false);
-        }else{
-            if(!bottomRight.belongsTo(player) && !bottomRight.isEmpty()){
-                const Cell &bottomRight2=getBottomRight(bottomRight,defaultValue);
-                if(bottomRight2 != defaultValue)
-                    if(bottomRight2.isEmpty())
-                        result.insert(bottomRight2,true);
-            }
-        }
-    }
+    return result;
+}
+
+QMap<Cell,bool>  ChessBoard::getAvaibleMovesForKing(const Cell &from) const
+{
+    QMap<Cell,bool> result;
 
     return result;
 }

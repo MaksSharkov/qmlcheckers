@@ -6,6 +6,7 @@
 #include <QMap>
 #include <QJsonArray>
 #include <QJsonObject>
+#include <functional>
 
 #include "checkers/cell.h"
 
@@ -63,6 +64,7 @@ private slots:
 private:
     void initRoles();
     QMap<Cell,bool>  getAvaibleMovesForMan(const Cell &from) const;
+    QMap<Cell,bool>  getAvaibleMovesForKing(const Cell &from) const;
 
     bool mustEat(const QString player) const;
 
@@ -71,6 +73,9 @@ private:
     const Cell& getTopRight(const Cell &from,const Cell &defaultValue)const;
     const Cell& getBottomRight(const Cell &from,const Cell &defaultValue)const;
 
+    void getDiagonalMove(const Cell &from,QMap<Cell,bool> &result,const QString allowedToMovePlayer
+                         ,const std::function<Cell const&(const ChessBoard*,const Cell&,const Cell&)>
+                         &diagonalGetter) const;
 
 private:
     QVector<Cell> m_board;
@@ -78,7 +83,6 @@ private:
     int m_boardSize;
 
     QHash<int, QByteArray> m_roleNames;
-
 };
 
 #endif // CHESSBOARD_H
