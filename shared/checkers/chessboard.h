@@ -68,14 +68,18 @@ private:
 
     bool mustEat(const QString player) const;
 
-    const Cell &getTopLeft(const Cell &from,const Cell &defaultValue)const;
-    const Cell& getBottomLeft(const Cell &from,const Cell &defaultValue)const;
-    const Cell& getTopRight(const Cell &from,const Cell &defaultValue)const;
-    const Cell& getBottomRight(const Cell &from,const Cell &defaultValue)const;
+    const Cell &getTopLeft(const Cell &from,const Cell &nullValue)const;
+    const Cell& getBottomLeft(const Cell &from,const Cell &nullValue)const;
+    const Cell& getTopRight(const Cell &from,const Cell &nullValue)const;
+    const Cell& getBottomRight(const Cell &from,const Cell &nullValue)const;
 
-    void getDiagonalMove(const Cell &from,QMap<Cell,bool> &result,const QString allowedToMovePlayer
-                         ,const std::function<Cell const&(const ChessBoard*,const Cell&,const Cell&)>
-                         &diagonalGetter) const;
+    Cell const & getDiagonalMove(const Cell &from, const Cell &nullValue, const QString allowedToMovePlayer
+                                 , const std::function<Cell const&(const ChessBoard*,const Cell&,const Cell&)>
+                                 &diagonalGetter) const;
+
+    void getDiagonalMovesKing(const Cell &from, QMap<Cell,bool> &result
+                              ,const std::function<Cell const&(const ChessBoard*,const Cell&,const Cell&)>
+                              &diagonalGetter) const;
 
 private:
     QVector<Cell> m_board;

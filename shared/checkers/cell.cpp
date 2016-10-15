@@ -9,8 +9,8 @@ Cell::Cell(int row, int col, QObject *parent)
     , m_col(col)
 {
     purgeMan();
-    connect(this,SIGNAL(rowChanged(uint)),this,SIGNAL(nameChanged()));
-    connect(this,SIGNAL(colChanged(uint)),this,SIGNAL(nameChanged()));
+    connect(this,SIGNAL(rowChanged(int)),this,SIGNAL(nameChanged()));
+    connect(this,SIGNAL(colChanged(int)),this,SIGNAL(nameChanged()));
     connect(this,SIGNAL(nameChanged()),this,SIGNAL(isBlackChanged()));
     connect(this,SIGNAL(manChanged(QJsonObject)),this,SIGNAL(isEmptyChanged()));
 }
@@ -18,7 +18,7 @@ Cell::Cell(int row, int col, QObject *parent)
 Cell::Cell(const Cell &other)
     : Cell(other.row(),other.col(),other.parent())
 {
-    setMan(other.man());
+    operator =(other);
 }
 
 void Cell::setRow(int row)
@@ -92,7 +92,9 @@ void Cell::swapMans(Cell &with)
 
 Cell& Cell::operator=(const Cell &second)
 {
-    *this = Cell(second);
+    m_row = second.m_row;
+    m_col = second.m_col;
+    m_man = second.m_man;
     return *this;
 }
 

@@ -108,6 +108,14 @@ void ChessBoard::moveMan(const QString player,int rowFrom, int colFrom, int rowT
                 int purgedManRow=(from.row()+to.row())/2;
                 int purgedManCol=(from.col()+to.col())/2;
                 m_board[indexOf(purgedManRow,purgedManCol)].purgeMan();
+            }else if(to.containsKing()){
+                int dRow= to.row() > from.row() ? 1 : -1;
+                int dCol= to.col() > from.col() ? 1 : -1;
+                int col=from.col()+dCol;
+                for(int row=from.row()+dRow;row!=to.row();row+=dRow){
+                    m_board[indexOf(row,col)].purgeMan();
+                    col+=dCol;
+                }
             }
 
             //Handle multy-cell moves
@@ -122,8 +130,6 @@ void ChessBoard::moveMan(const QString player,int rowFrom, int colFrom, int rowT
             man["rank"]="king";
             to.setMan(man);
         }
-
-
 
         qDebug()<<"MustEatFurther="<<mustEatFurther;
         emit manMoved(player,from,to,!mustEatFurther);
@@ -279,36 +285,36 @@ bool ChessBoard::isOnRightBorder(const Cell &cell) const
     return cell.col() == (m_boardSize-1);
 }
 
-Cell const& ChessBoard::getTopLeft(const Cell &from,const Cell &defaultValue) const
+Cell const& ChessBoard::getTopLeft(const Cell &from,const Cell &nullValue) const
 {
     if(!(isOnTopBorder(from) || isOnLeftBorder(from)))
         return m_board[indexOf(from.row()+1,from.col()-1)];
     else
-        return defaultValue;
+        return nullValue;
 }
 
-Cell const& ChessBoard::getBottomLeft(const Cell &from,const Cell &defaultValue) const
+Cell const& ChessBoard::getBottomLeft(const Cell &from,const Cell &nullValue) const
 {
     if(!(isOnBottomBorder(from) || isOnLeftBorder(from)))
         return m_board[indexOf(from.row()-1,from.col()-1)];
     else
-        return defaultValue;
+        return nullValue;
 }
 
-Cell const& ChessBoard::getTopRight(const Cell &from,const Cell &defaultValue) const
+Cell const& ChessBoard::getTopRight(const Cell &from,const Cell &nullValue) const
 {
     if(!(isOnTopBorder(from) || isOnRightBorder(from)))
         return m_board[indexOf(from.row()+1,from.col()+1)];
     else
-        return defaultValue;
+        return nullValue;
 }
 
-Cell const& ChessBoard::getBottomRight(const Cell &from,const Cell &defaultValue) const
+Cell const& ChessBoard::getBottomRight(const Cell &from,const Cell &nullValue) const
 {
     if(!(isOnBottomBorder(from) || isOnRightBorder(from)))
         return m_board[indexOf(from.row()-1,from.col()+1)];
     else
-        return defaultValue;
+        return nullValue;
 }
 
 QMap<Cell,bool> ChessBoard::getAvailableMoves(const Cell &from)const{
@@ -320,42 +326,88 @@ QMap<Cell,bool> ChessBoard::getAvailableMoves(const Cell &from)const{
         return QMap<Cell,bool>();
 }
 
-void ChessBoard::getDiagonalMove(const Cell &from, QMap<Cell,bool> &result, const QString allowedToMovePlayer
-                                 ,const std::function<Cell const&(const ChessBoard*, const Cell &,const Cell &)> &diagonalGetter) const
+Cell const & ChessBoard::getDiagonalMove(const Cell &from, const Cell &nullValue, const QString allowedToMovePlayer
+                                         ,const std::function<Cell const&(const ChessBoard*, const Cell &,const Cell &)> &diagonalGetter) const
 {
     const QString player=from.man()["whoose"].toString();
-    const Cell& defaultValue=m_board.at(1);
 
-    const Cell &diagonalCell=diagonalGetter(this,from,defaultValue);
-    if(diagonalCell != defaultValue){
-        if(diagonalCell.isEmpty() && (player==allowedToMovePlayer)){
-            result.insert(diagonalCell,false);
+    const Cell &diagonalCell=diagonalGetter(this,from,nullValue);
+    if(diagonalCell != nullValue){
+        if(diagonalCell.isEmpty()
+                && (allowedToMovePlayer.isEmpty() || (player==allowedToMovePlayer))){
+            return diagonalCell;
         }else{
             if(!diagonalCell.belongsTo(player)&& !diagonalCell.isEmpty()){
-                const Cell &diagonalCell2=diagonalGetter(this,diagonalCell,defaultValue);
-                if(diagonalCell2 != defaultValue)
-                    if(diagonalCell2.isEmpty())
-                        result.insert(diagonalCell2,true);
+                const Cell &diagonalCell2=diagonalGetter(this,diagonalCell,nullValue);
+                if(diagonalCell2 != nullValue)
+                    if(diagonalCell2.isEmpty()){
+                        return diagonalCell2;
+                    }
             }
         }
     }
+
+    return nullValue;
 }
 
 QMap<Cell,bool> ChessBoard::getAvaibleMovesForMan(const Cell &from)const
 {
     QMap<Cell,bool> result;
+    const Cell& nullValue=m_board.at(1);
 
-    getDiagonalMove(from,result,"bottomPlayer",&ChessBoard::getTopLeft);
-    getDiagonalMove(from,result,"bottomPlayer",&ChessBoard::getTopRight);
-    getDiagonalMove(from,result,"topPlayer",&ChessBoard::getBottomLeft);
-    getDiagonalMove(from,result,"topPlayer",&ChessBoard::getBottomRight);
+    Cell cell;
+    if((cell = getDiagonalMove(from,nullValue,"bottomPlayer",&ChessBoard::getTopLeft))
+            !=nullValue){
+        result.insert(cell,!cell.isNear(from));
+    }
+    if((cell = getDiagonalMove(from,nullValue,"bottomPlayer",&ChessBoard::getTopRight))
+            !=nullValue){
+        result.insert(cell,!cell.isNear(from));
+    }
+    if((cell = getDiagonalMove(from,nullValue,"topPlayer",&ChessBoard::getBottomLeft))
+            !=nullValue){
+        result.insert(cell,!cell.isNear(from));
+    }
+    if((cell = getDiagonalMove(from,nullValue,"topPlayer",&ChessBoard::getBottomRight))
+            !=nullValue){
+        result.insert(cell,!cell.isNear(from));
+    }
 
     return result;
+}
+
+void ChessBoard::getDiagonalMovesKing(const Cell &from, QMap<Cell,bool> &result
+                                      ,const std::function<Cell const&(const ChessBoard*,const Cell&,const Cell&)>
+                                      &diagonalGetter)const
+{
+    bool isEatMove=false;
+    bool isNear = false;
+    const Cell& nullValue=m_board.at(1);
+
+    for(Cell current=from,diagonal=nullValue;current != nullValue
+        ;current = diagonalGetter(this,current,nullValue)){
+
+        diagonal=getDiagonalMove(current,nullValue,"",diagonalGetter);
+        if(diagonal != nullValue){
+            isNear = diagonal.isNear(current);
+            if(!isEatMove){
+                isEatMove=!isNear;
+            }
+            result.insert(diagonal,isEatMove);
+            if(isNear)
+                current = diagonalGetter(this,current,nullValue);
+        }
+    }
 }
 
 QMap<Cell,bool>  ChessBoard::getAvaibleMovesForKing(const Cell &from) const
 {
     QMap<Cell,bool> result;
+
+    getDiagonalMovesKing(from, result,&ChessBoard::getTopLeft);
+    getDiagonalMovesKing(from, result,&ChessBoard::getTopRight);
+    getDiagonalMovesKing(from, result,&ChessBoard::getBottomLeft);
+    getDiagonalMovesKing(from, result,&ChessBoard::getBottomRight);
 
     return result;
 }

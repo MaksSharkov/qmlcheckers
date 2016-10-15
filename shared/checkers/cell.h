@@ -52,8 +52,8 @@ public:
 
     QJsonObject toJson()const;
 signals:
-    void rowChanged(uint);
-    void colChanged(uint);
+    void rowChanged(int);
+    void colChanged(int);
     void manChanged(const QJsonObject&);
     void nameChanged();
     void isBlackChanged();
