@@ -75,7 +75,16 @@ GridView{
             color: "transparent"
             Behavior on color {
                 ColorAnimation {
-                    duration: 600
+                    id:anim
+                    duration: 500
+                }
+            }
+
+            scale: 0
+            Behavior on scale{
+                PropertyAnimation {
+                    easing.type: Easing.Linear
+                    duration: anim.duration
                 }
             }
 
@@ -95,11 +104,13 @@ GridView{
                     PropertyChanges {
                         target: manDelegate
                         color: manColor
+                        scale: 1.0
                     }
                 }
                 ,
                 State{
                     name: "king"
+                    extend: "man"
                     when: cell.man["rank"] === "king"
                     PropertyChanges{
                         target: manDelegate
