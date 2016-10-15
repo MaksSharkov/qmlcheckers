@@ -115,6 +115,16 @@ void ChessBoard::moveMan(const QString player,int rowFrom, int colFrom, int rowT
             m_continiousMoveCell = mustEatFurther ? &to : nullptr;
         }
 
+        //Handle man --> king conversion
+        if((player=="bottomPlayer" && to.row() == m_boardSize-1)
+                ||(player=="topPlayer" && to.row() == 0)){
+            QJsonObject man=to.man();
+            man["rank"]="king";
+            to.setMan(man);
+        }
+
+
+
         qDebug()<<"MustEatFurther="<<mustEatFurther;
         emit manMoved(player,from,to,!mustEatFurther);
     }
