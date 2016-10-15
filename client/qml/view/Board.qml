@@ -45,11 +45,9 @@ GridView{
             man: model.man
         }
 
-        readonly property string manColor: !cell.isEmpty ?
-                                             cell.man.whoose === "topPlayer" ?
+        readonly property string manColor: cell.man["whoose"] === "topPlayer" ?
                                                    checkersModel.topPlayerColor
                                                  : checkersModel.bottomPlayerColor
-                                             : color
 
         MouseArea{
             anchors.fill: parent
@@ -74,8 +72,12 @@ GridView{
             anchors.fill: parent
             anchors.margins: 10
             radius: width
-            visible: !cell.isEmpty
-            color: manColor
+            color: "transparent"
+            Behavior on color {
+                ColorAnimation {
+                    duration: 600
+                }
+            }
 
             property bool isMine: iAmBottomPlayer ?
                                       cell.man["whoose"] === "bottomPlayer"
@@ -83,10 +85,29 @@ GridView{
             MouseArea{
                 anchors.fill: parent
                 enabled: parent.isMine && checkersModel.isMyTurnNow
-                onClicked:{
-                    grid.currentIndex = model.index
-                }
+                onClicked: grid.currentIndex = model.index
             }
+
+            states:[
+                State{
+                    name: "man"
+                    when: cell.man["rank"] === "man"
+                    PropertyChanges {
+                        target: manDelegate
+                        color: manColor
+                    }
+                }
+                ,
+                State{
+                    name: "king"
+                    when: cell.man["rank"] === "king"
+                    PropertyChanges{
+                        target: manDelegate
+                        color: Qt.darker(manColor)
+                    }
+                }
+
+            ]
         }
     }
 
