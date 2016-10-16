@@ -50,4 +50,9 @@ CheckersBoard{
         }
     }
 
+    function deinitialize(){
+        isInitialized = false
+        clearFromMans()
+    }
+
 }

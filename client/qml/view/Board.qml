@@ -134,5 +134,6 @@ GridView{
             checkersModel.parseReply(message)
         }
 
+        onDisconnected: checkersModel.deinitialize()
     }
 }
