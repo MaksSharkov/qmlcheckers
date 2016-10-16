@@ -7,10 +7,15 @@ import "../logic"
 GridView{
     id: grid
 
+    signal gameEnded(string winner)
+
     property alias boardSize: checkersModel.boardSize
     property alias client: checkersModel.client
 
     property bool iAmBottomPlayer: checkersModel.role === "bottomPlayer"
+
+    property alias role: checkersModel.role
+
     layoutDirection: iAmBottomPlayer ?
                          GridView.LeftToRight
                        : GridView.RightToLeft
@@ -128,10 +133,17 @@ GridView{
         visible: !checkersModel.isInitialized
     }
 
+    function parseReply(reply){
+        if(reply["type"]==="gameEnded"){
+                    gameEnded(reply["winner"])
+                }
+    }
+
     Connections{
         target:client
         onReplyReceived:{
             checkersModel.parseReply(message)
+            parseReply(message)
         }
 
         onDisconnected: checkersModel.deinitialize()

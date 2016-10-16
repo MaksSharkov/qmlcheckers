@@ -15,6 +15,11 @@ ColumnLayout {
     property string playersMessagesColor : "steelblue"
     property string enemyMessagesColor: "red"
 
+    function addMessage(message){
+        var msg= {sender:"Console" , text:message}
+        chatView.model.append(msg)
+    }
+
     Chatter{
         id:chatter
         onMessageReceived: {

@@ -15,6 +15,19 @@ SplitView {
                    (parent.width ) : parent.height
         height:width
         smooth: true
+
+        onGameEnded: endGame(winner)
+
+        function endGame(winner){
+            var message
+
+            if(role !== "spectator")
+                message = winner === client.name ? "You won." : "You lost."
+            else
+                message = winner+" won."
+
+            chatArea.addMessage(message)
+        }
     }
 
     Chat{

@@ -129,6 +129,11 @@ void CheckersGame::endGame(QString winnersUsername)
 {
     qDebug()<<"Game ended. Winner:"+winnersUsername;
     m_board.clearFromMans();
+
+    QJsonObject message;
+    message["type"]="gameEnded";
+    message["winner"]=winnersUsername;
+    notifyAbout(message);
     emit gameEnded(winnersUsername);
 }
 
