@@ -47,4 +47,8 @@ Item {
     function activate(){
         socket.active = true
     }
+
+    function deactivate(){
+        socket.active = false
+    }
 }

@@ -21,7 +21,6 @@ CheckersBoard{
             var to={row:destinationCell.row,col:destinationCell.col}
             var request={type:"moveMan",from:from,to:to}
             client.send(request)
-            console.debug("Request to move . "+JSON.stringify(request))
         }
     }
 

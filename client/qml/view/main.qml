@@ -23,6 +23,7 @@ ApplicationWindow {
         anchors.centerIn: parent
         onLogined: {
             console.log("logined.")
+            client.disconnected.connect(onDisconnected)
             switchToMainPage()
         }
         Connections{
@@ -30,7 +31,6 @@ ApplicationWindow {
             onErrorOccured:{
                 loginPage.errorMessage = errorMessage
             }
-            onDisconnected: onDisconnected()
         }
     }
 
@@ -48,6 +48,8 @@ ApplicationWindow {
 
     function onDisconnected(){
         loginPage.errorMessage = "Disconnected from server"
+        client.disconnected.disconnect(onDisconnected)
+
         loginPage.visible = true
         gameScreen.visible = false
     }
