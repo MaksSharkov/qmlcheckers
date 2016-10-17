@@ -187,7 +187,6 @@ QVariant ChessBoard::data(const QModelIndex &index, int role) const
         return QVariant();
     }
 
-
 }
 
 QHash<int, QByteArray> ChessBoard::roleNames() const
@@ -420,6 +419,21 @@ QMap<Cell,bool>  ChessBoard::getAvaibleMovesForKing(const Cell &from) const
     getDiagonalMovesKing(from, result,&ChessBoard::getTopRight);
     getDiagonalMovesKing(from, result,&ChessBoard::getBottomLeft);
     getDiagonalMovesKing(from, result,&ChessBoard::getBottomRight);
+
+    return result;
+}
+
+bool ChessBoard::hasMoves(const QString player)
+{
+    bool result=false;
+    QVector<Cell> cells=getPlayersCells(player);
+    foreach(const Cell cell,cells){
+            QMap<Cell,bool> availableMoves=getAvailableMoves(cell);
+            if(!availableMoves.isEmpty()){
+                result=true;
+                break;
+            }
+        }
 
     return result;
 }

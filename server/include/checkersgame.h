@@ -44,6 +44,7 @@ public slots:
 private slots:
     void onManMoved(QString player,Cell &from, Cell &to,bool giveTurnToNext);
     void handleBotsTurn(QString username, Cell &from, Cell &to, bool switchTurn);
+    void handleEndOfGame(QString player,Cell &from, Cell &to,bool giveTurnToNext);
     void endGame(QString winnersUsername);
     void removeBot();
 

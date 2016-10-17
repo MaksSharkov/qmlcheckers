@@ -129,7 +129,6 @@ GridView{
                 var message={type:"requestBot"}
                 client.send(message)
             }
-
         }
     }
 

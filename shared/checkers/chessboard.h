@@ -37,6 +37,8 @@ public:
     Q_INVOKABLE int indexOf(int row,int col) const;
     Q_INVOKABLE QJsonObject get(int index);
 
+    Q_INVOKABLE bool hasMoves(const QString player);
+
     Q_INVOKABLE bool isOnTopBorder(const Cell &cell)const;
     Q_INVOKABLE bool isOnBottomBorder(const Cell &cell)const;
     Q_INVOKABLE bool isOnLeftBorder(const Cell &cell)const;

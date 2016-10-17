@@ -9,6 +9,9 @@ CheckersGame::CheckersGame(QObject *parent)
 {
     connect(&m_board,SIGNAL(manMoved(QString,Cell&,Cell&,bool))
             ,this,SLOT(onManMoved(QString,Cell&,Cell&,bool)));
+
+    connect(&m_board,SIGNAL(manMoved(QString,Cell&,Cell&,bool))
+            ,this,SLOT(handleEndOfGame(QString,Cell&,Cell&,bool)));
 }
 
 void CheckersGame::setTopPlayer(QString username)
@@ -176,6 +179,21 @@ void CheckersGame::removeBot()
                    ,this,SLOT(handleBotsTurn(QString,Cell&,Cell&,bool)));
 
         disconnect(this,SIGNAL(gameEnded(QString)),this,SLOT(removeBot()));
+        setTopPlayer("");
     }
 }
 
+void CheckersGame::handleEndOfGame(QString player,Cell &from, Cell &to,bool giveTurnToNext)
+{
+    Q_UNUSED(from)
+    Q_UNUSED(to)
+    if(giveTurnToNext){
+        QString otherPlayer= player=="topPlayer" ? "bottomPlayer" : "topPlayer";
+        if(!m_board.hasMoves(otherPlayer)){
+            QString winnersUsername= player == "topPlayer" ? topPlayer() : bottomPlayer();
+            endGame(winnersUsername);
+        }
+
+    }
+
+}
