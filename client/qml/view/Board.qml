@@ -77,7 +77,9 @@ GridView{
             property bool isMine: iAmBottomPlayer ?
                                       cell.man["whoose"] === "bottomPlayer"
                                     : cell.man["whoose"] === "topPlayer"
-            property string manColor: isMine ? Settings.bottomPlayerColor : Settings.topPlayerColor
+            property string manColor: cell.man["whoose"] === "bottomPlayer" ?
+                                          Settings.bottomPlayerColor
+                                        : Settings.topPlayerColor
             MouseArea{
                 anchors.fill: parent
                 enabled: parent.isMine && checkersModel.isMyTurnNow
