@@ -64,17 +64,28 @@ bool ChessBoard::isMoveCorrect(const QString player,const Cell &from,const Cell 
     }
 }
 
+QVector<Cell> ChessBoard::getPlayersCells(const QString player) const
+{
+    QVector<Cell> result;
+    foreach(const Cell& cell,m_board)
+        if(cell.belongsTo(player))
+            result.append(cell);
+
+    return result;
+}
+
 bool ChessBoard::mustEat(const QString player)const
 {
     bool result=false;
-    foreach(const Cell& cell,m_board)
-        if(cell.belongsTo(player)){
+    QVector<Cell> cells=getPlayersCells(player);
+    foreach(const Cell cell,cells){
             QMap<Cell,bool> availableMoves=getAvailableMoves(cell);
             if(availableMoves.values().contains(true)){
                 result=true;
                 break;
             }
         }
+
     return result;
 }
 

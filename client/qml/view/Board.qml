@@ -131,6 +131,16 @@ GridView{
         id:busyIndicator
         anchors.fill: parent
         visible: !checkersModel.isInitialized
+        Button{
+            text: "Request Bot"
+            visible: parent.visible
+            anchors.centerIn: parent
+            onClicked:{
+                var message={type:"requestBot"}
+                client.send(message)
+            }
+
+        }
     }
 
     function parseReply(reply){

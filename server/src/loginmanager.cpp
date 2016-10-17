@@ -37,6 +37,7 @@ void LoginManager::denyLogin(QWebSocket *client, const QString &reason)
 
     emit sendReply(client,reply);
     emit loginDenied(client,reason);
+
 }
 
 void LoginManager::onReplyReceived(QWebSocket *client, QJsonObject reply)

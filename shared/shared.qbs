@@ -16,6 +16,8 @@ Product {
         "chat/message.h",
         "chat/personalmessage.cpp",
         "chat/personalmessage.h",
+        "checkers/ai/bot.cpp",
+        "checkers/ai/bot.h",
         "checkers/cell.cpp",
         "checkers/cell.h",
         "checkers/chessboard.cpp",

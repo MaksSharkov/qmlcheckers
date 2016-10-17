@@ -25,7 +25,7 @@ signals:
     void clientAdded(QWebSocket* client,QString username);
     void clientDisconnected(QWebSocket* client,QString username);
 public slots:  
-    void disconnectClient(QWebSocket* client);
+    void disconnectClient(QWebSocket* client,QString reason);
     void disconnectClient();
 
     void sendReply(QWebSocket* client, const QJsonObject &reply);

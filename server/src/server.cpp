@@ -26,7 +26,7 @@ Server::Server(QHostAddress listenAddress,quint16 port)
     connect(&m_manager,SIGNAL(logined(QWebSocket*,QString))
             ,this,SLOT(addClient(QWebSocket*,QString)));
     connect(&m_manager,SIGNAL(loginDenied(QWebSocket*,QString))
-            ,this,SLOT(disconnectClient(QWebSocket*)));
+            ,this,SLOT(disconnectClient(QWebSocket*,QString)));
     connect(&m_manager,SIGNAL(sendReply(QWebSocket*,QJsonObject))
             ,this,SLOT(sendReply(QWebSocket*,QJsonObject)));
 
@@ -67,8 +67,9 @@ void Server::acceptRequest(const QString &request)
     emit replyReceived(client,reply,username);
 }
 
-void Server::disconnectClient(QWebSocket* client)
+void Server::disconnectClient(QWebSocket* client, QString reason)
 {
+    client->close(QWebSocketProtocol::CloseCodeBadOperation,reason);
     QString username=m_clients.key(client);
     if(m_clients.remove(username)){
         emit clientDisconnected(client,username);
@@ -78,7 +79,7 @@ void Server::disconnectClient(QWebSocket* client)
 
 void Server::disconnectClient()
 {
-    disconnectClient(qobject_cast<QWebSocket*>(sender()));
+    disconnectClient(qobject_cast<QWebSocket*>(sender()),"No reason.");
 }
 
 void Server::sendReply(QWebSocket *client, const QJsonObject &reply)

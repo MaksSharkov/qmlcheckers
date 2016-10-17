@@ -40,6 +40,8 @@ public:
     Q_INVOKABLE bool isOnBottomBorder(const Cell &cell)const;
     Q_INVOKABLE bool isOnLeftBorder(const Cell &cell)const;
     Q_INVOKABLE bool isOnRightBorder(const Cell &cell)const;
+    Q_INVOKABLE bool mustEat(const QString player) const;
+    Q_INVOKABLE QVector<Cell> getPlayersCells(const QString player) const;
 
     virtual int rowCount(const QModelIndex &parent) const;
     virtual QVariant data(const QModelIndex &index, int role) const;
@@ -65,8 +67,6 @@ private:
     void initRoles();
     QMap<Cell,bool>  getAvaibleMovesForMan(const Cell &from) const;
     QMap<Cell,bool>  getAvaibleMovesForKing(const Cell &from) const;
-
-    bool mustEat(const QString player) const;
 
     const Cell &getTopLeft(const Cell &from,const Cell &nullValue)const;
     const Cell& getBottomLeft(const Cell &from,const Cell &nullValue)const;

@@ -1,5 +1,7 @@
 #include "checkersgame.h"
 
+#include "checkers/ai/bot.h"
+
 CheckersGame::CheckersGame(QObject *parent)
     : QObject(parent)
     , m_board(8,this)
@@ -44,6 +46,17 @@ void CheckersGame::onReplyReceived(QWebSocket *client, QJsonObject reply, QStrin
 
         if(!player.isEmpty())
             m_board.moveMan(player,from,to);
+
+    }else if(reply["type"]=="requestBot"){
+        if(username == bottomPlayer() && topPlayer().isEmpty()){
+            setTopPlayer("bot");
+            connect(&m_board,SIGNAL(manMoved(QString,Cell&,Cell&,bool))
+                       ,this,SLOT(handleBotsTurn(QString,Cell&,Cell&,bool)));
+
+            connect(this,SIGNAL(gameEnded(QString)),this,SLOT(removeBot()));
+            initializeGame();
+        }
+
     }
 }
 
@@ -108,6 +121,7 @@ void CheckersGame::onClientAdded(QWebSocket* client,QString username)
         setTopPlayer(username);
         initializeGame();
     }else{
+        //tell observer about game state
         QJsonObject message = getBoardInfo();
         emit sendReply(client,message);
     }
@@ -123,6 +137,7 @@ void CheckersGame::onClientRemoved(QWebSocket *client, QString username)
         setBottomPlayer("");
         endGame(topPlayer());
     }
+
 }
 
 void CheckersGame::endGame(QString winnersUsername)
@@ -135,5 +150,32 @@ void CheckersGame::endGame(QString winnersUsername)
     message["winner"]=winnersUsername;
     notifyAbout(message);
     emit gameEnded(winnersUsername);
+}
+
+void CheckersGame::handleBotsTurn(QString player,Cell &from,Cell &to,bool switchTurn)
+{
+    Q_UNUSED(from)
+    Q_UNUSED(to)
+    if(player!= "topPlayer" && switchTurn){
+        qDebug()<<"Bot's turn now."<<endl;
+
+        QPair<Cell,Cell> move = BotUtils::getMove("topPlayer",m_board);
+        m_board.moveMan("topPlayer",move.first.toJson(),move.second.toJson());
+    }else if(player=="topPlayer" && !switchTurn){
+        //continious move
+        QPair<Cell,Cell> move = BotUtils::getEatMove(to,m_board);
+        m_board.moveMan("topPlayer",move.first.toJson(),move.second.toJson());
+    }
+
+}
+
+void CheckersGame::removeBot()
+{
+    if(topPlayer() == "bot"){
+        disconnect(&m_board,SIGNAL(manMoved(QString,Cell&,Cell&,bool))
+                   ,this,SLOT(handleBotsTurn(QString,Cell&,Cell&,bool)));
+
+        disconnect(this,SIGNAL(gameEnded(QString)),this,SLOT(removeBot()));
+    }
 }
 
