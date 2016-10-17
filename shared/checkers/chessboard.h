@@ -4,6 +4,7 @@
 #include <QAbstractListModel>
 #include <QVector>
 #include <QMap>
+#include <QMutex>
 #include <QJsonArray>
 #include <QJsonObject>
 #include <functional>

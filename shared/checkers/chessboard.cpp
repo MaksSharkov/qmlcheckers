@@ -2,6 +2,7 @@
 #include "assert.h"
 
 #include <QDebug>
+#include <QMutexLocker>
 
 ChessBoard::ChessBoard(int boardSize, QObject *parent)
     : QAbstractListModel(parent)

@@ -8,9 +8,6 @@ CheckersBoard{
 
     property Client client
 
-    property string topPlayerColor
-    property string bottomPlayerColor
-
     property bool isMyTurnNow: false
     property string role: "spectator"
     property bool isInitialized: false

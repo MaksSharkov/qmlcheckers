@@ -31,8 +31,6 @@ GridView{
 
     model: ChessModel{
         id:checkersModel
-        topPlayerColor: Settings.aiManColor
-        bottomPlayerColor: Settings.playerManColor
     }
 
     delegate: Rectangle{
@@ -49,10 +47,6 @@ GridView{
             col: model.col
             man: model.man
         }
-
-        readonly property string manColor: cell.man["whoose"] === "topPlayer" ?
-                                                   checkersModel.topPlayerColor
-                                                 : checkersModel.bottomPlayerColor
 
         MouseArea{
             anchors.fill: parent
@@ -78,24 +72,12 @@ GridView{
             anchors.margins: 10
             radius: width
             color: "transparent"
-            Behavior on color {
-                ColorAnimation {
-                    id:anim
-                    duration: 500
-                }
-            }
-
             scale: 0
-            Behavior on scale{
-                PropertyAnimation {
-                    easing.type: Easing.Linear
-                    duration: anim.duration
-                }
-            }
 
             property bool isMine: iAmBottomPlayer ?
                                       cell.man["whoose"] === "bottomPlayer"
                                     : cell.man["whoose"] === "topPlayer"
+            property string manColor: isMine ? Settings.bottomPlayerColor : Settings.topPlayerColor
             MouseArea{
                 anchors.fill: parent
                 enabled: parent.isMine && checkersModel.isMyTurnNow
@@ -123,6 +105,12 @@ GridView{
                     }
                 }
 
+            ]
+
+            transitions: [
+                Transition {
+                    NumberAnimation{properties:"scale,color"}
+                }
             ]
         }
     }
