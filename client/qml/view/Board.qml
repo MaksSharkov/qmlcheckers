@@ -111,7 +111,7 @@ GridView{
 
             transitions: [
                 Transition {
-                    NumberAnimation{properties:"scale,color"}
+                    NumberAnimation{properties:"scale,color" ;duration:600}
                 }
             ]
         }
