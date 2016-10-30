@@ -15,6 +15,7 @@ CppApplication {
         "qml/logic/Loginer.qml",
         "qml/logic/Player.qml",
         "qml/view/Board.qml",
+        "qml/view/CellDelegate.qml",
         "qml/view/Chat.qml",
         "qml/view/GameScreen.qml",
         "qml/view/LoginPage.qml",

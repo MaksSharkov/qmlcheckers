@@ -33,87 +33,24 @@ GridView{
         id:checkersModel
     }
 
-    delegate: Rectangle{
+    delegate: CellDelegate {
         id: cellDelegate
-        width: grid.cellWidth
         height: grid.cellHeight
-        color: index==grid.currentIndex ?
-                   Settings.selectedCellColor:
-                   cell.isBlack ? Settings.blackCellColor : Settings.whiteCellColor
-
-        property Cell cell:Cell{
+        width: grid.cellWidth
+        color: index==grid.currentIndex ? Settings.selectedCellColor:cellColor
+        cell:Cell{
             id:cell
             row: model.row
             col: model.col
             man: model.man
         }
 
-        MouseArea{
-            anchors.fill: parent
-            enabled: cell.isEmpty
-            onClicked: {
-                if(grid.currentIndex !== -1){
-                    checkersModel.requestMove(checkersModel.get(grid.currentIndex),checkersModel.get(index))
-                    grid.currentIndex = -1
-                }
+        onManSelected: grid.currentIndex = model.index
+        onCellSelected: {
+            if(grid.currentIndex !== -1){
+                checkersModel.requestMove(checkersModel.get(grid.currentIndex),checkersModel.get(index))
+                grid.currentIndex = -1
             }
-        }
-
-        Text{
-            id:nameOfCell
-            visible: Settings.debug
-            color: Settings.debugTextColor
-            text: cell.name
-        }
-
-        Rectangle{
-            id:manDelegate
-            anchors.fill: parent
-            anchors.margins: 10
-            radius: width
-            color: "transparent"
-            scale: 0
-
-            property bool isMine: iAmBottomPlayer ?
-                                      cell.man["whoose"] === "bottomPlayer"
-                                    : cell.man["whoose"] === "topPlayer"
-            property string manColor: cell.man["whoose"] === "bottomPlayer" ?
-                                          Settings.bottomPlayerColor
-                                        : Settings.topPlayerColor
-            MouseArea{
-                anchors.fill: parent
-                enabled: parent.isMine && checkersModel.isMyTurnNow
-                onClicked: grid.currentIndex = model.index
-            }
-
-            states:[
-                State{
-                    name: "man"
-                    when: cell.man["rank"] === "man"
-                    PropertyChanges {
-                        target: manDelegate
-                        color: manColor
-                        scale: 1.0
-                    }
-                }
-                ,
-                State{
-                    name: "king"
-                    extend: "man"
-                    when: cell.man["rank"] === "king"
-                    PropertyChanges{
-                        target: manDelegate
-                        color: Qt.darker(manColor)
-                    }
-                }
-
-            ]
-
-            transitions: [
-                Transition {
-                    NumberAnimation{properties:"scale,color" ;duration:600}
-                }
-            ]
         }
     }
 

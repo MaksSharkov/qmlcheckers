@@ -11,5 +11,6 @@
         <file>qml/view/main.qml</file>
         <file>qml/view/GameScreen.qml</file>
         <file>settings.js</file>
+        <file>qml/view/CellDelegate.qml</file>
     </qresource>
 </RCC>
