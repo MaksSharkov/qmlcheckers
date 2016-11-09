@@ -166,7 +166,7 @@ void CheckersGame::handleBotsTurn(QString player,Cell &from,Cell &to,bool switch
         m_board.moveMan("topPlayer",move.first.toJson(),move.second.toJson());
     }else if(player=="topPlayer" && !switchTurn){
         //continious move
-        QPair<Cell,Cell> move = BotUtils::getEatMove(to,m_board);
+        QPair<Cell,Cell> move = BotUtils::getMove(to,m_board);
         m_board.moveMan("topPlayer",move.first.toJson(),move.second.toJson());
     }
 

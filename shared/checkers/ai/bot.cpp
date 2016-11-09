@@ -19,7 +19,7 @@ QPair<Cell,Cell> BotUtils::getMove(const QString &player, const ChessBoard &boar
     return result;
 }
 
-QPair<Cell,Cell> BotUtils::getEatMove(const Cell &cell,const ChessBoard &board)
+QPair<Cell,Cell> BotUtils::getMove(const Cell &cell,const ChessBoard &board)
 {
      QMap<Cell,bool> moves=board.getAvailableMoves(cell);
      QPair<Cell,Cell> result;
