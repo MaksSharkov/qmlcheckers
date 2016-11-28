@@ -10,6 +10,7 @@ int main(int argc, char *argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication app(argc, argv);
+    app.setApplicationName("qmlcheckers");
 
     qmlRegisterType<Cell>("Checkers",1,0,"Cell");
     qmlRegisterType<ChessBoard>("Checkers",1,0,"CheckersBoard");
