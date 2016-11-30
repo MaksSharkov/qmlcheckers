@@ -3,19 +3,40 @@
 LoginManager::LoginManager(const QMap<QString,QWebSocket*> *clients,QObject *parent)
     : QObject(parent),m_database(),m_clients(clients)
 {
-    m_database.insert("user1","user1");
-    m_database.insert("user2","user2");
-    m_database.insert("user3","user3");
+    m_database=QSqlDatabase::addDatabase("QSQLITE");
+    m_database.setDatabaseName("data.sqlite");
+    if (!m_database.open()) {
+        qDebug()<<"Unable to open login database."<<m_database.lastError().text();
+        QCoreApplication::quit();
+    }
+}
+
+QString LoginManager::getPassword(const QString username)
+{
+    QString queryString="SELECT password FROM logins WHERE username = '"+username+"'";
+    QSqlQuery query(queryString,m_database);
+    query.exec();
+    qDebug()<<query.executedQuery();
+    if(query.next()){
+        QVariant result = query.value(0);
+        return result.toString();
+    }
+    else
+        return QString();
+
 }
 
 bool LoginManager::passwordValid(const QString username, const QString password)
 {
-    return m_database.value(username) == password;
+    QString userPassword = getPassword(username);
+    return userPassword == password;
 }
 
 bool LoginManager::usernameExists(const QString username)
 {
-    return m_database.contains(username);
+    QString userPassword  = getPassword(username);
+    return ! userPassword.isEmpty();
+
 }
 
 void LoginManager::acceptLogin(QWebSocket *client,QString username)
@@ -45,7 +66,7 @@ void LoginManager::onReplyReceived(QWebSocket *client, QJsonObject reply)
     if(reply["type"] == "loginRequest"){
         QString username=reply["login"].toString();
         QString password=reply["password"].toString();
-        if(!usernameExists(username) || !passwordValid(username,password))
+        if(!passwordValid(username,password))
             denyLogin(client,"Invalid username and/or password.");
 
         else if(m_clients->contains(username)){

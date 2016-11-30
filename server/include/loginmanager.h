@@ -5,6 +5,7 @@
 #include <QString>
 #include <QWebSocket>
 #include <QMap>
+#include <QtSql>
 #include <QJsonObject>
 
 class LoginManager : public QObject
@@ -31,8 +32,9 @@ private slots:
     void denyLogin(QWebSocket* client, const QString &reason);
 
 private:
-    QMap<QString,QString> m_database;
+    QSqlDatabase m_database;
     const QMap<QString,QWebSocket*> *m_clients;
+    QString getPassword(const QString username);
 };
 
 #endif // USERDATAMANAGER_H
