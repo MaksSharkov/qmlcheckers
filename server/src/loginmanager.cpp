@@ -16,7 +16,6 @@ QString LoginManager::getPassword(const QString username)
     QString queryString="SELECT password FROM logins WHERE username = '"+username+"'";
     QSqlQuery query(queryString,m_database);
     query.exec();
-    qDebug()<<query.executedQuery();
     if(query.next()){
         QVariant result = query.value(0);
         return result.toString();

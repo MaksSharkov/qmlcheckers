@@ -8,11 +8,11 @@
 #include <QtSql>
 #include <QJsonObject>
 
-class LoginManager : public QObject
+class UserDataManager : public QObject
 {
     Q_OBJECT
 public:
-    explicit LoginManager(const QMap<QString,QWebSocket*> *clients,QObject *parent = 0);
+    explicit UserDataManager(const QMap<QString,QWebSocket*> *clients,QObject *parent = 0);
 
     bool usernameExists(const QString username);
     bool passwordValid(const QString username,const QString password);

@@ -36,7 +36,7 @@ private slots:
     void addClient(QWebSocket* client,const QString username);
 private:
     QMap<QString,QWebSocket*> m_clients;
-    LoginManager m_manager;
+    UserDataManager m_manager;
     Room m_mainRoom;
 };
 
