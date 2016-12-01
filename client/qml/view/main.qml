@@ -16,6 +16,15 @@ ApplicationWindow {
         name: loginPage.loginName
     }
 
+    header:     UserdataBlock{
+        id:userData
+        visible: gameScreen.visible
+        client: client
+        username: client.name
+        editable: true
+        status: "Testing..."
+    }
+
     LoginPage{
         id: loginPage
         client:client
