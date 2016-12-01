@@ -1,6 +1,6 @@
-#include "loginmanager.h"
+#include "userdatamanager.h"
 
-LoginManager::LoginManager(const QMap<QString,QWebSocket*> *clients,QObject *parent)
+UserDataManager::UserDataManager(const QMap<QString,QWebSocket*> *clients,QObject *parent)
     : QObject(parent),m_database(),m_clients(clients)
 {
     m_database=QSqlDatabase::addDatabase("QSQLITE");
@@ -11,7 +11,7 @@ LoginManager::LoginManager(const QMap<QString,QWebSocket*> *clients,QObject *par
     }
 }
 
-QString LoginManager::getPassword(const QString username)
+QString UserDataManager::getPassword(const QString username)
 {
     QString queryString="SELECT password FROM logins WHERE username = '"+username+"'";
     QSqlQuery query(queryString,m_database);
@@ -25,20 +25,20 @@ QString LoginManager::getPassword(const QString username)
 
 }
 
-bool LoginManager::passwordValid(const QString username, const QString password)
+bool UserDataManager::passwordValid(const QString username, const QString password)
 {
     QString userPassword = getPassword(username);
     return userPassword == password;
 }
 
-bool LoginManager::usernameExists(const QString username)
+bool UserDataManager::usernameExists(const QString username)
 {
     QString userPassword  = getPassword(username);
     return ! userPassword.isEmpty();
 
 }
 
-void LoginManager::acceptLogin(QWebSocket *client,QString username)
+void UserDataManager::acceptLogin(QWebSocket *client,QString username)
 {
     qDebug()<<"Accepted client's login. username="<<username<<endl;
     QJsonObject reply;
@@ -48,7 +48,7 @@ void LoginManager::acceptLogin(QWebSocket *client,QString username)
     emit logined(client,username);
 }
 
-void LoginManager::denyLogin(QWebSocket *client, const QString &reason)
+void UserDataManager::denyLogin(QWebSocket *client, const QString &reason)
 {
     QJsonObject reply;
     reply["type"]="loginReply";
@@ -60,7 +60,7 @@ void LoginManager::denyLogin(QWebSocket *client, const QString &reason)
 
 }
 
-void LoginManager::onReplyReceived(QWebSocket *client, QJsonObject reply)
+void UserDataManager::onReplyReceived(QWebSocket *client, QJsonObject reply)
 {
     if(reply["type"] == "loginRequest"){
         QString username=reply["login"].toString();

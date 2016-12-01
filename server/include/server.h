@@ -6,7 +6,7 @@
 
 #include "chat/conferencemessage.h"
 #include "chat/personalmessage.h"
-#include "loginmanager.h"
+#include "userdatamanager.h"
 #include "room.h"
 
 #include <QWebSocketServer>
