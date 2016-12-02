@@ -11,17 +11,23 @@ UserDataManager::UserDataManager(const QMap<QString,QWebSocket*> *clients,QObjec
     }
 }
 
+QString UserDataManager::getFirstResult(QSqlQuery query)
+{
+    query.exec();
+
+    QString result=QString();
+    if(query.next()){
+        result = query.value(0).toString();
+    }
+
+    return result;
+}
+
 QString UserDataManager::getPassword(const QString username)
 {
     QString queryString="SELECT password FROM logins WHERE username = '"+username+"'";
     QSqlQuery query(queryString,m_database);
-    query.exec();
-    if(query.next()){
-        QVariant result = query.value(0);
-        return result.toString();
-    }
-    else
-        return QString();
+    return getFirstResult(query);
 
 }
 
@@ -74,5 +80,26 @@ void UserDataManager::onReplyReceived(QWebSocket *client, QJsonObject reply)
         else{
             acceptLogin(client,username);
         }
+    }else if(reply["type"] == "publicInfoRequest"){
+        QString username=reply["username"].toString();
+        if(usernameExists(username)){
+            QJsonObject reply = HoldemChat::toJson(getPublicInfo(username));
+            emit sendReply(client,reply);
+        }
     }
+}
+
+QString UserDataManager::getStatus(const QString username)
+{
+    QString queryString="SELECT status FROM statuses WHERE username = '"+username+"'";
+    QSqlQuery query(queryString,m_database);
+    return getFirstResult(query);
+}
+
+HoldemChat::TalkerPublicInfo UserDataManager::getPublicInfo(const QString username)
+{
+    HoldemChat::TalkerPublicInfo result;
+    result.name = username;
+    result.status = getStatus(username);
+    return result;
 }

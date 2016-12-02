@@ -63,4 +63,20 @@ RowLayout{
         statusText.readOnly = true
     }
 
+    function updateInfo() {
+        var request={type:"publicInfoRequest" ,username:username}
+        client.send(request)
+    }
+
+    function parseReply(reply) {
+        if(reply["type"] === "publicInfo"
+                && reply["username"] === username) {
+            status = reply["status"]
+        }
+    }
+
+    Connections{
+        target:client
+        onReplyReceived: parseReply(message)
+    }
 }

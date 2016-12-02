@@ -30,6 +30,7 @@ signals:
     void sendReply(QWebSocket*,QJsonObject);
     void topPlayerChanged(QString player);
     void bottomPlayerChanged(QString player);
+    void gameStarted();
     void gameEnded(QString winnersUsername);
 
 public slots:

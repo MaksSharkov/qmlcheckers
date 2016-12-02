@@ -8,6 +8,8 @@
 #include <QtSql>
 #include <QJsonObject>
 
+#include "types.h"
+
 class UserDataManager : public QObject
 {
     Q_OBJECT
@@ -16,6 +18,8 @@ public:
 
     bool usernameExists(const QString username);
     bool passwordValid(const QString username,const QString password);
+
+    HoldemChat::TalkerPublicInfo getPublicInfo(const QString username);
 
 signals:
     void logined(QWebSocket* client,const QString username);
@@ -34,7 +38,10 @@ private slots:
 private:
     QSqlDatabase m_database;
     const QMap<QString,QWebSocket*> *m_clients;
+
+    QString getStatus(const QString username);
     QString getPassword(const QString username);
+    QString getFirstResult(QSqlQuery query);
 };
 
 #endif // USERDATAMANAGER_H

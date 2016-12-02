@@ -110,6 +110,7 @@ void CheckersGame::initializeGame()
     QJsonObject message = getBoardInfo();
     m_isBottomPlayerTurnNow=true;
     notifyAbout(message);
+    emit gameStarted();
     qDebug()<<"GameInitialized";
 
 }

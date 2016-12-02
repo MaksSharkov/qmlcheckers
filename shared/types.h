@@ -3,6 +3,8 @@
 
 #include <QtGlobal>
 
+#include <QJsonObject>
+
 namespace HoldemChat {
 
 typedef struct{
@@ -13,6 +15,8 @@ typedef struct{
     QString name;
     QString status;
 }TalkerPublicInfo;
+
+QJsonObject toJson(const TalkerPublicInfo &info);
 
 }
 

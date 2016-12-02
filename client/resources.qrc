@@ -13,7 +13,5 @@
         <file>settings.js</file>
         <file>qml/view/CellDelegate.qml</file>
         <file>qml/view/UserdataBlock.qml</file>
-        <file>qml/res/cancel_button.svg</file>
-        <file>qml/res/ok_button.svg</file>
     </qresource>
 </RCC>

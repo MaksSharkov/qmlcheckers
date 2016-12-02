@@ -17,11 +17,18 @@ ApplicationWindow {
     }
 
     header:     UserdataBlock{
-        id:userData
+        id:topPlayerUserBlock
         visible: gameScreen.visible
         client: client
-        username: client.name
-        editable: true
+        editable: username == client.name
+        status: "Testing..."
+    }
+
+    footer:     UserdataBlock{
+        id:bottomPlayerUserBlock
+        visible: gameScreen.visible
+        client: client
+        editable: username == client.name
         status: "Testing..."
     }
 
@@ -61,6 +68,21 @@ ApplicationWindow {
 
         loginPage.visible = true
         gameScreen.visible = false
+    }
+
+    function parseReply(message){
+        if(message["type"]==="gameInit"){
+            topPlayerUserBlock.username = message["topPlayer"]
+            bottomPlayerUserBlock.username = message["bottomPlayer"]
+            topPlayerUserBlock.updateInfo()
+            bottomPlayerUserBlock.updateInfo()
+
+        }
+    }
+
+    Connections{
+        target:client
+        onReplyReceived: parseReply(message)
     }
 
 }
