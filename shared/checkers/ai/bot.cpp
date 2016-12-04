@@ -19,13 +19,10 @@ QPair<Cell,Cell> BotUtils::getMove(const QString &player, const ChessBoard &boar
 {
     QVector<Move> result = getAllPlayersMoves(player, board);
 
-    QPair<Cell,Cell> output;
-    output.first = result.first().from();
-    output.second = result.first().to();
-    return output;
+    return result.first().toPair();
 }
 
-QPair<Cell,Cell> BotUtils::getEatMove(const Cell &cell,const ChessBoard &board)
+QPair<Cell,Cell> BotUtils::getMove(const Cell &cell,const ChessBoard &board)
 {
      QMap<Cell,bool> moves=board.getAvailableMoves(cell);
      QPair<Cell,Cell> result;

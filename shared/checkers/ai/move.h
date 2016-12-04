@@ -23,6 +23,7 @@ public:
     bool operator !=(const Move &other)const;
 
     QString toString()const;
+    QPair<Cell,Cell> toPair()const;
 
 public slots:
     void setFrom(const Cell from);

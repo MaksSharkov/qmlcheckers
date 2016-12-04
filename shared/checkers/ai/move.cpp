@@ -58,3 +58,11 @@ QString Move::toString() const
 {
     return QString("[%1-%2]").arg(m_from.name(),m_to.name());
 }
+
+QPair<Cell,Cell> Move::toPair() const
+{
+    QPair<Cell,Cell> output;
+    output.first = from();
+    output.second = to();
+    return output;
+}
