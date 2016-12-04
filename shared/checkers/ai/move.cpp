@@ -43,3 +43,18 @@ void Move::setIsEating(const bool isEating)
         m_isEating=isEating;
     }
 }
+
+bool Move::operator ==(const Move &other)const
+{
+    return (m_from == other.m_from) && (m_to == other.m_to) && (m_isEating == other.isEating());
+}
+
+bool Move::operator !=(const Move &other)const
+{
+    return !operator ==(other);
+}
+
+QString Move::toString() const
+{
+    return QString("[%1-%2]").arg(m_from.name(),m_to.name());
+}

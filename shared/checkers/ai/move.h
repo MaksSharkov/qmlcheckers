@@ -19,6 +19,11 @@ public:
     Q_INVOKABLE Cell to() const;
     Q_INVOKABLE bool isEating()const;
 
+    bool operator ==(const Move &other)const;
+    bool operator !=(const Move &other)const;
+
+    QString toString()const;
+
 public slots:
     void setFrom(const Cell from);
     void setTo(const Cell to);
