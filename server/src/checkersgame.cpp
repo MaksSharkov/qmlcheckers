@@ -160,17 +160,16 @@ void CheckersGame::handleBotsTurn(QString player,Cell &from,Cell &to,bool switch
 {
     Q_UNUSED(from)
     Q_UNUSED(to)
+    QPair<Cell,Cell> move;
     if(player!= "topPlayer" && switchTurn){
         qDebug()<<"Bot's turn now."<<endl;
-
-        QPair<Cell,Cell> move = BotUtils::getMove("topPlayer",m_board);
-        m_board.moveMan("topPlayer",move.first.toJson(),move.second.toJson());
+        move = BotUtils::getMove("topPlayer",m_board);
     }else if(player=="topPlayer" && !switchTurn){
         //continious move
-        QPair<Cell,Cell> move = BotUtils::getMove(to,m_board);
-        m_board.moveMan("topPlayer",move.first.toJson(),move.second.toJson());
+        move = BotUtils::getEatMove(to,m_board);
     }
 
+    m_board.moveMan("topPlayer",move.first.toJson(),move.second.toJson());
 }
 
 void CheckersGame::removeBot()
