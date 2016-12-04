@@ -108,8 +108,8 @@ QJsonObject Cell::toJson() const
 }
 
 QString Cell::name()const{
-    QChar letter='a'+m_row;
-    QString result=letter+QString::number(m_col);
+    QChar letter='a'+m_col;
+    QString result=letter+QString::number(m_row+1);
     return result;
 }
 
