@@ -10,13 +10,16 @@
 #include <functional>
 
 #include "checkers/cell.h"
+#include "checkers/ai/move.h"
 
 class ChessBoard : public QAbstractListModel
 {
+    friend class BotUtils;
     Q_OBJECT
     Q_PROPERTY(int boardSize READ boardSize NOTIFY boardSizeChanged)
 public:
-    explicit ChessBoard(int boardSize=8, QObject *parent = 0);
+    ChessBoard(int boardSize=8, QObject *parent = 0);
+    ChessBoard(const ChessBoard &other);
     enum RoleNames {
         RowRole = Qt::UserRole+1
         ,ColRole
@@ -37,7 +40,7 @@ public:
     Q_INVOKABLE int indexOf(int row,int col) const;
     Q_INVOKABLE QJsonObject get(int index);
 
-    Q_INVOKABLE bool hasMoves(const QString player);
+    Q_INVOKABLE bool hasMoves(const QString player) const;
 
     Q_INVOKABLE bool isOnTopBorder(const Cell &cell)const;
     Q_INVOKABLE bool isOnBottomBorder(const Cell &cell)const;
@@ -45,9 +48,12 @@ public:
     Q_INVOKABLE bool isOnRightBorder(const Cell &cell)const;
     Q_INVOKABLE bool mustEat(const QString player) const;
     Q_INVOKABLE QVector<Cell> getPlayersCells(const QString player) const;
+    Q_INVOKABLE bool canEat(const Cell &cell);
 
     virtual int rowCount(const QModelIndex &parent) const;
     virtual QVariant data(const QModelIndex &index, int role) const;
+
+    ChessBoard& operator=(const ChessBoard &second);
 signals:
     void manMoved(QString player,Cell &from,Cell &to,bool giveTurnToNext);
     void boardSizeChanged(int);
@@ -63,6 +69,11 @@ public slots:
 
 protected:
     virtual QHash<int, QByteArray> roleNames() const override;
+
+    void applyMove(const Move move);
+    void applyMoves(const QVector<Move> moves);
+    void applyMove(Cell &from, Cell &to);
+
 private slots:
     void handleManChanged();
     void setBoardSize(int boardSize);

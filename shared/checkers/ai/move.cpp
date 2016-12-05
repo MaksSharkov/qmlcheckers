@@ -1,9 +1,10 @@
 #include "move.h"
 
-Move::Move(const Cell from, const Cell to, bool isEating)
+Move::Move(const Cell from, const Cell to, bool isEating,bool mustEatFuther)
     : m_from(from)
     , m_to(to)
     , m_isEating(isEating)
+    , m_mustEatFuther(mustEatFuther)
 {
 
 }
@@ -65,4 +66,19 @@ QPair<Cell,Cell> Move::toPair() const
     output.first = from();
     output.second = to();
     return output;
+}
+
+bool Move::operator <(const Move &other)const
+{
+    return m_from < other.m_from;
+}
+
+bool Move::mustEatFuther()const
+{
+    return m_mustEatFuther;
+}
+
+void Move::setMustReadFuther(const bool mustEatFuther)
+{
+    m_mustEatFuther = mustEatFuther;
 }

@@ -11,6 +11,11 @@ ChessBoard::ChessBoard(int boardSize, QObject *parent)
     initializeWithEmpty(boardSize);
 }
 
+ChessBoard::ChessBoard(const ChessBoard &other)
+{
+    *this = other;
+}
+
 void ChessBoard::initializeWithEmpty(int boardSize)
 {
     initRoles();
@@ -42,7 +47,7 @@ bool ChessBoard::isMoveCorrect(const QString player,const Cell &from,const Cell 
     }else if(!to.isBlack()){
         qDebug()<<"Attempt to move man to non-black cell"<<endl;
         return false;
-    }else if(m_continiousMoveCell != nullptr && m_continiousMoveCell != &from){
+    }else if(m_continiousMoveCell != nullptr && *m_continiousMoveCell != from){
         qDebug()<<"Attempt to move separate man while player must eat further";
         return false;
     }else{
@@ -109,43 +114,21 @@ void ChessBoard::moveMan(const QString player,int rowFrom, int colFrom, int rowT
 
     if(isMoveCorrect(player,from,to))
     {
-        from.swapMans(to);
+        applyMove(from,to);
 
+        //Handle multy-cell moves
         bool mustEatFurther = false;
-
         if(!from.isNear(to)){
-
-            //Purge man,that has being eaten
-            if(to.containsMan()){
-                int purgedManRow=(from.row()+to.row())/2;
-                int purgedManCol=(from.col()+to.col())/2;
-                m_board[indexOf(purgedManRow,purgedManCol)].purgeMan();
-            }else if(to.containsKing()){
-                int dRow= to.row() > from.row() ? 1 : -1;
-                int dCol= to.col() > from.col() ? 1 : -1;
-                int col=from.col()+dCol;
-                for(int row=from.row()+dRow;row!=to.row();row+=dRow){
-                    m_board[indexOf(row,col)].purgeMan();
-                    col+=dCol;
-                }
-            }
-
-            //Handle multy-cell moves
-            mustEatFurther = getAvailableMoves(to).values().contains(true);
+            mustEatFurther = canEat(to);
             m_continiousMoveCell = mustEatFurther ? &to : nullptr;
-        }
-
-        //Handle man --> king conversion
-        if((player=="bottomPlayer" && to.row() == m_boardSize-1)
-                ||(player=="topPlayer" && to.row() == 0)){
-            QJsonObject man=to.man();
-            man["rank"]="king";
-            to.setMan(man);
         }
 
         qDebug()<<"MustEatFurther="<<mustEatFurther;
         emit manMoved(player,from,to,!mustEatFurther);
+
     }
+
+
 }
 
 void ChessBoard::clearFromMans()
@@ -423,7 +406,7 @@ QMap<Cell,bool>  ChessBoard::getAvaibleMovesForKing(const Cell &from) const
     return result;
 }
 
-bool ChessBoard::hasMoves(const QString player)
+bool ChessBoard::hasMoves(const QString player) const
 {
     bool result=false;
     QVector<Cell> cells=getPlayersCells(player);
@@ -436,4 +419,69 @@ bool ChessBoard::hasMoves(const QString player)
         }
 
     return result;
+}
+
+ChessBoard& ChessBoard::operator=(const ChessBoard &second)
+{
+    m_board = second.m_board;
+    m_boardSize = second.m_boardSize;
+    m_continiousMoveCell = second.m_continiousMoveCell;
+
+    m_roleNames = second.m_roleNames;
+
+    return *this;
+}
+
+void ChessBoard::applyMove(const Move move)
+{
+    if(move != Move()){
+        applyMove(m_board[indexOf(move.from().row(),move.from().col())]
+                ,m_board[indexOf(move.to().row(),move.to().col())]);
+    }
+}
+
+void ChessBoard::applyMoves(const QVector<Move> moves)
+{
+    foreach(const Move move,moves)
+        applyMove(move);
+}
+
+bool ChessBoard::canEat(const Cell &cell)
+{
+    return getAvailableMoves(cell).values().contains(true);
+}
+
+void ChessBoard::applyMove(Cell &from, Cell &to)
+{
+    QString player = from.man()["whoose"].toString();
+    if(player.isEmpty())
+        player = to.man()["whoose"].toString();
+
+    from.swapMans(to);
+
+    if(!from.isNear(to)){
+
+        //Purge man,that has being eaten
+        if(to.containsMan()){
+            int purgedManRow=(from.row()+to.row())/2;
+            int purgedManCol=(from.col()+to.col())/2;
+            m_board[indexOf(purgedManRow,purgedManCol)].purgeMan();
+        }else if(to.containsKing()){
+            int dRow= to.row() > from.row() ? 1 : -1;
+            int dCol= to.col() > from.col() ? 1 : -1;
+            int col=from.col()+dCol;
+            for(int row=from.row()+dRow;row!=to.row();row+=dRow){
+                m_board[indexOf(row,col)].purgeMan();
+                col+=dCol;
+            }
+        }
+    }
+
+    //Handle man --> king conversion
+    if((player=="bottomPlayer" && to.row() == m_boardSize-1)
+            ||(player=="topPlayer" && to.row() == 0)){
+        QJsonObject man=to.man();
+        man["rank"]="king";
+        to.setMan(man);
+    }
 }

@@ -1,5 +1,10 @@
 #include "bot.h"
 
+#include <QMap>
+#include <functional>
+#include <QtAlgorithms>
+#include <QDebug>
+
 QVector<Move> BotUtils::getAllPlayersMoves(const QString &player, const ChessBoard &board)
 {
     QVector<Move> result;
@@ -12,24 +17,69 @@ QVector<Move> BotUtils::getAllPlayersMoves(const QString &player, const ChessBoa
         result += mapToVector(cell,moves,mustEat);
     }
 
+    ChessBoard testBoard;
+    Cell testTo;
+    Cell testFrom;
+    foreach(auto move,result){
+        if(move.isEating()){
+            testBoard=board;
+            testBoard.applyMove(move);
+            testTo=move.to();
+            testFrom=move.from();
+            testTo.swapMans(testFrom);
+            move.setMustReadFuther(testBoard.canEat(testTo));
+        }
+    }
     return result;
+}
+
+Move BotUtils::getMoveFor(const Cell &from,const QString player,const ChessBoard board)
+{
+    QVector<QVector<MoveSequence>> tree(analyzeDepth);
+
+    if(from == Cell()){
+        tree[0].append(getAllPlayersMoves(player,board));
+    }else{
+        tree[0].append(mapToVector(from,board.getAvailableMoves(from),board.mustEat(player)));
+    }
+
+    if(tree[0].size() == 1)
+        return tree[0].first().first();
+
+    qDebug() << "Bot Tier 0 variants of move:";
+    foreach(const Move move,tree[0].first())
+        qDebug() << move.toString();
+
+    ChessBoard currentBoard;
+    MoveSequence currentSequence;
+    MoveVariants currentVariants;
+    QString currentPlayer=player;
+    for(int depth = 1; depth<analyzeDepth; depth++){
+        foreach(const MoveSequence previousSequence, tree.at(depth-1)){
+            currentPlayer = (needSwitchTurn(previousSequence)) ? getEnemyPlayer(player) : player;
+            currentBoard=board;
+            currentBoard.applyMoves(previousSequence);
+            currentVariants=getAllPlayersMoves(currentPlayer,currentBoard);
+            foreach(const Move variant,currentVariants){
+                currentSequence = previousSequence;
+                currentSequence.append(variant);
+                tree[depth].append(currentSequence);
+            }
+        }
+    }
+
+    sortByRate(tree.last(),board);
+    return tree.last().first().first();
 }
 
 QPair<Cell,Cell> BotUtils::getMove(const QString &player, const ChessBoard &board)
 {
-    QVector<Move> result = getAllPlayersMoves(player, board);
-
-    return result.first().toPair();
+    return getMoveFor(Cell(),player,board).toPair();
 }
 
 QPair<Cell,Cell> BotUtils::getMove(const Cell &cell,const ChessBoard &board)
 {
-     QMap<Cell,bool> moves=board.getAvailableMoves(cell);
-     QPair<Cell,Cell> result;
-
-     result.first = cell;
-     result.second = moves.key(true);
-     return result;
+    return getMoveFor(cell,cell.man()["whoose"].toString(),board).toPair();
 }
 
 
@@ -48,4 +98,52 @@ QVector<Move> BotUtils::mapToVector(const Cell from,const QMap<Cell,bool> moves,
     }
 
     return result;
+}
+
+bool BotUtils::needSwitchTurn(const MoveSequence sequence)
+{
+    bool result=true;
+    foreach(const Move move,sequence){
+        if(!move.mustEatFuther())
+            result=!result;
+    }
+    return result;
+}
+
+QString BotUtils::getEnemyPlayer(const QString player)
+{
+    const QString enemyPlayer = (player == "topPlayer") ? "bottomPlayer" : "topPlayer";
+
+    return enemyPlayer;
+}
+
+int BotUtils::getRate(const MoveSequence moves, const ChessBoard board)
+{
+    const QString player=moves.first().to().man()["whoose"].toString();
+    ChessBoard newBoard=board;
+    newBoard.applyMoves(moves);
+
+    return getRate(newBoard,board,player);
+}
+
+int BotUtils::getRate(const ChessBoard board,const ChessBoard oldBoard,const QString player)
+{
+    Q_UNUSED(oldBoard)
+    if(!board.hasMoves(getEnemyPlayer(player)))
+        return 100;
+    else
+        return 0;
+}
+
+static ChessBoard boardForCompare;
+int compareByRate(const void* first,const void* second)
+{
+    return BotUtils::getRate(*((const BotUtils::MoveSequence*)first),boardForCompare)
+            - BotUtils::getRate(*((const BotUtils::MoveSequence*)second),boardForCompare);
+}
+
+void BotUtils::sortByRate(QVector<MoveSequence> &sequences,const ChessBoard board)
+{
+    boardForCompare=board;
+    qsort(sequences.data(),sequences.size(),sizeof(MoveSequence),compareByRate);
 }
