@@ -75,7 +75,8 @@ void CheckersGame::onManMoved(QString player, Cell &from, Cell &to, bool giveTur
     message["player"]=player;
     message["switchTurn"]=giveTurnToNext;
 
-    qDebug()<<"Man moved :"<<from.name()<<" - "<<to.name()<<endl;
+    Move move=Move(from,to);
+    qDebug()<<"Man moved :"<<move.toString();
     emit notifyAbout(message);
 }
 
@@ -162,11 +163,13 @@ void CheckersGame::handleBotsTurn(QString player,Cell &from,Cell &to,bool switch
     Q_UNUSED(to)
     QPair<Cell,Cell> move;
     if(player!= "topPlayer" && switchTurn){
-        qDebug()<<"Bot's turn now."<<endl;
+        qDebug()<<"Bot's turn now.";
         move = BotUtils::getMove("topPlayer",m_board);
     }else if(player=="topPlayer" && !switchTurn){
         //continious move
         move = BotUtils::getMove(to,m_board);
+    }else{
+        return;
     }
 
     m_board.moveMan("topPlayer",move.first.toJson(),move.second.toJson());

@@ -32,6 +32,7 @@ private:
 
     static int getRate(const ChessBoard board,const ChessBoard oldBoard,const QString player);
     static void sortByRate(QVector<MoveSequence> &sequences, const ChessBoard board);
+    static QString toString(const MoveSequence sequence);
 };
 
 #endif // BOT_H

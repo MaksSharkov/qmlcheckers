@@ -37,31 +37,30 @@ Move BotUtils::getMoveFor(const Cell &from,const QString player,const ChessBoard
 {
     QVector<QVector<MoveSequence>> tree(analyzeDepth);
 
+    MoveSequence initialMoves;
     if(from == Cell()){
-        tree[0].append(getAllPlayersMoves(player,board));
+        initialMoves=getAllPlayersMoves(player,board);
     }else{
-        tree[0].append(mapToVector(from,board.getAvailableMoves(from),board.mustEat(player)));
+        initialMoves=mapToVector(from,board.getAvailableMoves(from),board.mustEat(player));
+    }
+    foreach(const Move move,initialMoves){
+        MoveSequence newSequence;
+        newSequence.append(move);
+        tree[0].append(newSequence);
     }
 
-    if(tree[0].size() == 1)
-        return tree[0].first().first();
+    if(initialMoves.size() == 1)
+        return initialMoves.first();
 
-    qDebug() << "Bot Tier 0 variants of move:";
-    foreach(const Move move,tree[0].first())
-        qDebug() << move.toString();
-
-    ChessBoard currentBoard;
-    MoveSequence currentSequence;
-    MoveVariants currentVariants;
     QString currentPlayer=player;
     for(int depth = 1; depth<analyzeDepth; depth++){
         foreach(const MoveSequence previousSequence, tree.at(depth-1)){
             currentPlayer = (needSwitchTurn(previousSequence)) ? getEnemyPlayer(player) : player;
-            currentBoard=board;
+            ChessBoard currentBoard = ChessBoard(board);
             currentBoard.applyMoves(previousSequence);
-            currentVariants=getAllPlayersMoves(currentPlayer,currentBoard);
+            MoveVariants currentVariants=getAllPlayersMoves(currentPlayer,currentBoard);
             foreach(const Move variant,currentVariants){
-                currentSequence = previousSequence;
+                MoveSequence currentSequence = MoveSequence(previousSequence);
                 currentSequence.append(variant);
                 tree[depth].append(currentSequence);
             }
@@ -69,6 +68,14 @@ Move BotUtils::getMoveFor(const Cell &from,const QString player,const ChessBoard
     }
 
     sortByRate(tree.last(),board);
+
+    for(int depth=0;depth<analyzeDepth;depth++){
+        qDebug("Bot Tier %d variants of move:",depth);
+        foreach(const MoveSequence sequence,tree[depth]){
+            qDebug()<<toString(sequence);
+        }
+    }
+
     return tree.last().first().first();
 }
 
@@ -146,4 +153,13 @@ void BotUtils::sortByRate(QVector<MoveSequence> &sequences,const ChessBoard boar
 {
     boardForCompare=board;
     qsort(sequences.data(),sequences.size(),sizeof(MoveSequence),compareByRate);
+}
+
+QString BotUtils::toString(const MoveSequence sequence)
+{
+    QString result;
+    foreach(const Move move,sequence)
+        result +=move.toString();
+
+    return result;
 }
