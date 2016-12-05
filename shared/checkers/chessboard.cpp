@@ -115,20 +115,7 @@ void ChessBoard::moveMan(const QString player,int rowFrom, int colFrom, int rowT
     if(isMoveCorrect(player,from,to))
     {
         applyMove(from,to);
-
-        //Handle multy-cell moves
-        bool mustEatFurther = false;
-        if(!from.isNear(to)){
-            mustEatFurther = canEat(to);
-            m_continiousMoveCell = mustEatFurther ? &to : nullptr;
-        }
-
-        qDebug()<<"MustEatFurther="<<mustEatFurther;
-        emit manMoved(player,from,to,!mustEatFurther);
-
     }
-
-
 }
 
 void ChessBoard::clearFromMans()
@@ -459,6 +446,7 @@ void ChessBoard::applyMove(Cell &from, Cell &to)
 
     from.swapMans(to);
 
+    bool mustEatFurther = false;
     if(!from.isNear(to)){
 
         //Purge man,that has being eaten
@@ -475,6 +463,13 @@ void ChessBoard::applyMove(Cell &from, Cell &to)
                 col+=dCol;
             }
         }
+
+
+        //Handle multy-cell moves
+        if(!from.isNear(to)){
+            mustEatFurther = canEat(to);
+            m_continiousMoveCell = mustEatFurther ? &to : nullptr;
+        }
     }
 
     //Handle man --> king conversion
@@ -483,5 +478,10 @@ void ChessBoard::applyMove(Cell &from, Cell &to)
         QJsonObject man=to.man();
         man["rank"]="king";
         to.setMan(man);
+
+        mustEatFurther = false;
+        m_continiousMoveCell = nullptr;
     }
+
+    emit manMoved(player,from,to,!mustEatFurther);
 }
