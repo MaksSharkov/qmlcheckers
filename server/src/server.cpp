@@ -22,7 +22,7 @@ Server::Server(QHostAddress listenAddress,quint16 port)
     connect(this,SIGNAL(newConnection()),this,SLOT(acceptConnection()));
 
     connect(this,SIGNAL(replyReceived(QWebSocket*,QJsonObject,QString))
-            ,&m_manager,SLOT(onReplyReceived(QWebSocket*,QJsonObject)));
+            ,&m_manager,SLOT(onReplyReceived(QWebSocket*,QJsonObject,QString)));
     connect(&m_manager,SIGNAL(logined(QWebSocket*,QString))
             ,this,SLOT(addClient(QWebSocket*,QString)));
     connect(&m_manager,SIGNAL(loginDenied(QWebSocket*,QString))

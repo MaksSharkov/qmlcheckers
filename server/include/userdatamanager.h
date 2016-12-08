@@ -29,7 +29,8 @@ signals:
 
 public slots:
 
-    void onReplyReceived(QWebSocket *client,QJsonObject reply);
+    void onReplyReceived(QWebSocket *client,QJsonObject reply,QString loginName);
+    void updateUserInfo(const QString username,const HoldemChat::TalkerPublicInfo info);
 
 private slots:
     void acceptLogin(QWebSocket* client, QString username);

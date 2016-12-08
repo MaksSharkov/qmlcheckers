@@ -11,4 +11,13 @@ QJsonObject toJson(const TalkerPublicInfo &info)
     return result;
 }
 
+TalkerPublicInfo fromJson(const QString username,const QJsonObject object)
+{
+    TalkerPublicInfo result;
+    result.name = username;
+    result.status = object["status"].toString();
+
+    return result;
+}
+
 }

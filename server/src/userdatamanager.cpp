@@ -66,7 +66,7 @@ void UserDataManager::denyLogin(QWebSocket *client, const QString &reason)
 
 }
 
-void UserDataManager::onReplyReceived(QWebSocket *client, QJsonObject reply)
+void UserDataManager::onReplyReceived(QWebSocket *client, QJsonObject reply,QString loginName)
 {
     if(reply["type"] == "loginRequest"){
         QString username=reply["login"].toString();
@@ -86,6 +86,9 @@ void UserDataManager::onReplyReceived(QWebSocket *client, QJsonObject reply)
             QJsonObject reply = HoldemChat::toJson(getPublicInfo(username));
             emit sendReply(client,reply);
         }
+    }else if(reply["type"] == "publicInfoUpdate"){
+        HoldemChat::TalkerPublicInfo info =  HoldemChat::fromJson(loginName,reply);
+        updateUserInfo(loginName,info);
     }
 }
 
@@ -103,3 +106,11 @@ HoldemChat::TalkerPublicInfo UserDataManager::getPublicInfo(const QString userna
     result.status = getStatus(username);
     return result;
 }
+
+void UserDataManager::updateUserInfo(const QString username,const HoldemChat::TalkerPublicInfo info)
+{
+    QString queryString="UPDATE statuses SET status = '"+info.status+"' WHERE username = '"+username+"'";
+    QSqlQuery query(queryString,m_database);
+    query.exec();
+}
+

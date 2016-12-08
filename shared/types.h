@@ -17,6 +17,7 @@ typedef struct{
 }TalkerPublicInfo;
 
 QJsonObject toJson(const TalkerPublicInfo &info);
+TalkerPublicInfo fromJson(const QString username,const QJsonObject object);
 
 }
 

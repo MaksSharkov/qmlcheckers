@@ -58,6 +58,8 @@ RowLayout{
     function closeStatusEditMenu(submitRequested) {
         if(!submitRequested)
             statusText.text = statusEditMenu.oldtext
+        else
+            sendNewInfo()
 
         statusEditMenu.visible = false
         statusText.readOnly = true
@@ -65,6 +67,11 @@ RowLayout{
 
     function updateInfo() {
         var request={type:"publicInfoRequest" ,username:username}
+        client.send(request)
+    }
+
+    function sendNewInfo() {
+        var request={type:"publicInfoUpdate" ,status:status}
         client.send(request)
     }
 
