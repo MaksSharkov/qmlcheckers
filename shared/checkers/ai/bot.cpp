@@ -52,10 +52,12 @@ Move BotUtils::getMoveFor(const Cell &from,const QString player,const ChessBoard
     if(initialMoves.size() == 1)
         return initialMoves.first();
 
-    QString currentPlayer=player;
+    QString currentPlayer = getEnemyPlayer(player);
     for(int depth = 1; depth<analyzeDepth; depth++){
         foreach(const MoveSequence previousSequence, tree.at(depth-1)){
-            currentPlayer = (needSwitchTurn(previousSequence)) ? getEnemyPlayer(player) : player;
+            currentPlayer = (needSwitchTurn(previousSequence)) ?
+                        player
+                      : getEnemyPlayer(player) ;
             ChessBoard currentBoard = ChessBoard(board);
             currentBoard.applyMoves(previousSequence);
             MoveVariants currentVariants=getAllPlayersMoves(currentPlayer,currentBoard);
