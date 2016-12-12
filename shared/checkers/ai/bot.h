@@ -16,6 +16,8 @@ class BotUtils{
 public:
 
     static const int analyzeDepth=3;
+    static const int printLimit=5;
+
     static QPair<Cell,Cell> getMove(const QString &player,const CheckersBoard &board);
     static QPair<Cell,Cell> getMove(const Cell &cell,const CheckersBoard &board);
 

@@ -75,8 +75,11 @@ CheckersMove BotUtils::getMoveFor(const Cell &from,const QString player,const Ch
 
     for(int depth=0;depth<analyzeDepth;depth++){
         qDebug("Bot Tier %d variants of move:",depth);
+        int printCount = 0;
         foreach(const MoveSequence sequence,tree[depth]){
             qDebug()<<toString(sequence);
+            if(++printCount > printLimit)
+                break;
         }
     }
 
