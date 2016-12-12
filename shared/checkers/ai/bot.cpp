@@ -2,12 +2,13 @@
 
 #include <QMap>
 #include <functional>
-#include <QtAlgorithms>
 #include <QDebug>
 
-QVector<Move> BotUtils::getAllPlayersMoves(const QString &player, const ChessBoard &board)
+
+QVector<CheckersMove> BotUtils::getAllPlayersMoves(const QString &player, const CheckersSituation &situation)
 {
-    QVector<Move> result;
+    QVector<CheckersMove> result;
+    CheckersBoard board = situation.board();
     bool mustEat = board.mustEat(player);
 
     QVector<Cell> cells=board.getPlayersCells(player);
@@ -17,23 +18,23 @@ QVector<Move> BotUtils::getAllPlayersMoves(const QString &player, const ChessBoa
         result += mapToVector(cell,moves,mustEat);
     }
 
-    ChessBoard testBoard;
+
     Cell testTo;
     Cell testFrom;
     foreach(auto move,result){
         if(move.isEating()){
-            testBoard=board;
-            testBoard.applyMove(move);
+            CheckersSituation newSituation(board);
+            newSituation.applyMove(move);
             testTo=move.to();
             testFrom=move.from();
             testTo.swapMans(testFrom);
-            move.setMustReadFuther(testBoard.canEat(testTo));
+            move.setMustReadFuther(newSituation.board().canEat(testTo));
         }
     }
     return result;
 }
 
-Move BotUtils::getMoveFor(const Cell &from,const QString player,const ChessBoard board)
+CheckersMove BotUtils::getMoveFor(const Cell &from,const QString player,const CheckersBoard board)
 {
     QVector<QVector<MoveSequence>> tree(analyzeDepth);
 
@@ -43,7 +44,7 @@ Move BotUtils::getMoveFor(const Cell &from,const QString player,const ChessBoard
     }else{
         initialMoves=mapToVector(from,board.getAvailableMoves(from),board.mustEat(player));
     }
-    foreach(const Move move,initialMoves){
+    foreach(const CheckersMove move,initialMoves){
         MoveSequence newSequence;
         newSequence.append(move);
         tree[0].append(newSequence);
@@ -58,10 +59,10 @@ Move BotUtils::getMoveFor(const Cell &from,const QString player,const ChessBoard
             currentPlayer = (needSwitchTurn(previousSequence)) ?
                         player
                       : getEnemyPlayer(player) ;
-            ChessBoard currentBoard = ChessBoard(board);
-            currentBoard.applyMoves(previousSequence);
-            MoveVariants currentVariants=getAllPlayersMoves(currentPlayer,currentBoard);
-            foreach(const Move variant,currentVariants){
+            CheckersSituation currentSituation = CheckersSituation(board);
+            currentSituation.applyMoves(previousSequence);
+            MoveVariants currentVariants=getAllPlayersMoves(currentPlayer,currentSituation);
+            foreach(const CheckersMove variant,currentVariants){
                 MoveSequence currentSequence = MoveSequence(previousSequence);
                 currentSequence.append(variant);
                 tree[depth].append(currentSequence);
@@ -69,7 +70,8 @@ Move BotUtils::getMoveFor(const Cell &from,const QString player,const ChessBoard
         }
     }
 
-    sortByRate(tree.last(),board);
+    CheckersSituation initialSituation = CheckersSituation(board);
+    initialSituation.sortByRate(tree.last(),player);
 
     for(int depth=0;depth<analyzeDepth;depth++){
         qDebug("Bot Tier %d variants of move:",depth);
@@ -81,26 +83,26 @@ Move BotUtils::getMoveFor(const Cell &from,const QString player,const ChessBoard
     return tree.last().first().first();
 }
 
-QPair<Cell,Cell> BotUtils::getMove(const QString &player, const ChessBoard &board)
+QPair<Cell,Cell> BotUtils::getMove(const QString &player, const CheckersBoard &board)
 {
     return getMoveFor(Cell(),player,board).toPair();
 }
 
-QPair<Cell,Cell> BotUtils::getMove(const Cell &cell,const ChessBoard &board)
+QPair<Cell,Cell> BotUtils::getMove(const Cell &cell,const CheckersBoard &board)
 {
     return getMoveFor(cell,cell.man()["whoose"].toString(),board).toPair();
 }
 
 
-QVector<Move> BotUtils::mapToVector(const Cell from,const QMap<Cell,bool> moves,const bool eatMovesOnly)
+QVector<CheckersMove> BotUtils::mapToVector(const Cell from,const QMap<Cell,bool> moves,const bool eatMovesOnly)
 {
-    QVector<Move> result;
+    QVector<CheckersMove> result;
     foreach(const Cell to,moves.keys()){
-        result.append(Move(from,to,moves.value(to)));
+        result.append(CheckersMove(from,to,moves.value(to)));
     }
 
     if(eatMovesOnly){
-        foreach(const Move move,result){
+        foreach(const CheckersMove move,result){
             if(!move.isEating())
                 result.removeOne(move);
         }
@@ -112,56 +114,9 @@ QVector<Move> BotUtils::mapToVector(const Cell from,const QMap<Cell,bool> moves,
 bool BotUtils::needSwitchTurn(const MoveSequence sequence)
 {
     bool result=true;
-    foreach(const Move move,sequence){
+    foreach(const CheckersMove move,sequence){
         if(!move.mustEatFuther())
             result=!result;
     }
-    return result;
-}
-
-QString BotUtils::getEnemyPlayer(const QString player)
-{
-    const QString enemyPlayer = (player == "topPlayer") ? "bottomPlayer" : "topPlayer";
-
-    return enemyPlayer;
-}
-
-int BotUtils::getRate(const MoveSequence moves, const ChessBoard board)
-{
-    const QString player=moves.first().to().man()["whoose"].toString();
-    ChessBoard newBoard=board;
-    newBoard.applyMoves(moves);
-
-    return getRate(newBoard,board,player);
-}
-
-int BotUtils::getRate(const ChessBoard board,const ChessBoard oldBoard,const QString player)
-{
-    Q_UNUSED(oldBoard)
-    if(!board.hasMoves(getEnemyPlayer(player)))
-        return 100;
-    else
-        return 0;
-}
-
-static ChessBoard boardForCompare;
-int compareByRate(const void* first,const void* second)
-{
-    return BotUtils::getRate(*((const BotUtils::MoveSequence*)first),boardForCompare)
-            - BotUtils::getRate(*((const BotUtils::MoveSequence*)second),boardForCompare);
-}
-
-void BotUtils::sortByRate(QVector<MoveSequence> &sequences,const ChessBoard board)
-{
-    boardForCompare=board;
-    qsort(sequences.data(),sequences.size(),sizeof(MoveSequence),compareByRate);
-}
-
-QString BotUtils::toString(const MoveSequence sequence)
-{
-    QString result;
-    foreach(const Move move,sequence)
-        result +=move.toString();
-
     return result;
 }

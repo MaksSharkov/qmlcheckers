@@ -75,7 +75,7 @@ void CheckersGame::onManMoved(QString player, Cell &from, Cell &to, bool giveTur
     message["player"]=player;
     message["switchTurn"]=giveTurnToNext;
 
-    Move move=Move(from,to);
+    CheckersMove move=CheckersMove(from,to);
     qDebug()<<"Man moved :"<<move.toString();
     emit notifyAbout(message);
 }

@@ -4,19 +4,19 @@
 #include <QDebug>
 #include <QMutexLocker>
 
-ChessBoard::ChessBoard(int boardSize, QObject *parent)
+CheckersBoard::CheckersBoard(int boardSize, QObject *parent)
     : QAbstractListModel(parent)
     , m_continiousMoveCell(nullptr)
 {
     initializeWithEmpty(boardSize);
 }
 
-ChessBoard::ChessBoard(const ChessBoard &other)
+CheckersBoard::CheckersBoard(const CheckersBoard &other)
 {
     *this = other;
 }
 
-void ChessBoard::initializeWithEmpty(int boardSize)
+void CheckersBoard::initializeWithEmpty(int boardSize)
 {
     initRoles();
     setBoardSize(boardSize);
@@ -30,7 +30,7 @@ void ChessBoard::initializeWithEmpty(int boardSize)
         }
 }
 
-bool ChessBoard::isMoveCorrect(const QString player,const Cell &from,const Cell &to) const
+bool CheckersBoard::isMoveCorrect(const QString player,const Cell &from,const Cell &to) const
 {
     if(!from.belongsTo(player)){
         qDebug()<<"Attempt to move man that doesn't belong to player."<<player<<"!="<<from.man()["whoose"].toString()<<endl;
@@ -70,7 +70,7 @@ bool ChessBoard::isMoveCorrect(const QString player,const Cell &from,const Cell 
     }
 }
 
-QVector<Cell> ChessBoard::getPlayersCells(const QString player) const
+QVector<Cell> CheckersBoard::getPlayersCells(const QString player) const
 {
     QVector<Cell> result;
     foreach(const Cell& cell,m_board)
@@ -80,7 +80,7 @@ QVector<Cell> ChessBoard::getPlayersCells(const QString player) const
     return result;
 }
 
-bool ChessBoard::mustEat(const QString player)const
+bool CheckersBoard::mustEat(const QString player)const
 {
     bool result=false;
     QVector<Cell> cells=getPlayersCells(player);
@@ -95,19 +95,19 @@ bool ChessBoard::mustEat(const QString player)const
     return result;
 }
 
-bool ChessBoard::isMoveCorrect(const QString player,const QJsonObject &from,const QJsonObject &to)const
+bool CheckersBoard::isMoveCorrect(const QString player,const QJsonObject &from,const QJsonObject &to)const
 {
     const Cell& cellFrom=m_board.at(indexOf(from["row"].toInt(),from["col"].toInt()));
     const Cell& cellTo = m_board.at(indexOf(to["row"].toInt(),to["col"].toInt()));
     return isMoveCorrect(player,cellFrom,cellTo);
 }
 
-void ChessBoard::addMan(int row,int col,QString rank,QString player)
+void CheckersBoard::addMan(int row,int col,QString rank,QString player)
 {
     m_board[indexOf(row,col)].putMan(rank,player);
 }
 
-void ChessBoard::moveMan(const QString player,int rowFrom, int colFrom, int rowTo, int colTo)
+void CheckersBoard::moveMan(const QString player,int rowFrom, int colFrom, int rowTo, int colTo)
 {
     Cell &from=m_board[indexOf(rowFrom,colFrom)];
     Cell &to=m_board[indexOf(rowTo,colTo)];
@@ -118,13 +118,13 @@ void ChessBoard::moveMan(const QString player,int rowFrom, int colFrom, int rowT
     }
 }
 
-void ChessBoard::clearFromMans()
+void CheckersBoard::clearFromMans()
 {
     for(int index=0;index<m_board.size();index++)
         m_board[index].purgeMan();
 }
 
-QJsonArray ChessBoard::toJson() const
+QJsonArray CheckersBoard::toJson() const
 {
     QJsonArray result;
     foreach(Cell cell,m_board)
@@ -133,13 +133,13 @@ QJsonArray ChessBoard::toJson() const
     return result;
 }
 
-int ChessBoard::rowCount(const QModelIndex &parent) const
+int CheckersBoard::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
     return m_board.size();
 }
 
-QVariant ChessBoard::data(const QModelIndex &index, int role) const
+QVariant CheckersBoard::data(const QModelIndex &index, int role) const
 {
     int cellIndex = index.row();
     if(cellIndex < 0 || cellIndex >= m_board.size()) {
@@ -159,26 +159,26 @@ QVariant ChessBoard::data(const QModelIndex &index, int role) const
 
 }
 
-QHash<int, QByteArray> ChessBoard::roleNames() const
+QHash<int, QByteArray> CheckersBoard::roleNames() const
 {
     return m_roleNames;
 }
 
-void ChessBoard::initRoles()
+void CheckersBoard::initRoles()
 {
     m_roleNames[RoleNames::RowRole]="row";
     m_roleNames[RoleNames::ColRole]="col";
     m_roleNames[RoleNames::ManRole]="man";
 }
 
-int ChessBoard::indexOf(int row, int col)const
+int CheckersBoard::indexOf(int row, int col)const
 {
     assert(row>=0 && row<m_boardSize);
     assert(col>=0 && col<m_boardSize);
     return (row*m_boardSize+col);
 }
 
-void ChessBoard:: clear()
+void CheckersBoard:: clear()
 {
     if(!m_board.isEmpty()){
         emit beginRemoveRows(QModelIndex(), 0, m_board.size()-1);
@@ -188,7 +188,7 @@ void ChessBoard:: clear()
     }
 }
 
-QJsonObject ChessBoard::get(int index)
+QJsonObject CheckersBoard::get(int index)
 {
     if(index < 0 || index >= m_board.size()) {
         return Cell().toJson();
@@ -197,7 +197,7 @@ QJsonObject ChessBoard::get(int index)
     return m_board.at(index).toJson();
 }
 
-void ChessBoard::handleManChanged()
+void CheckersBoard::handleManChanged()
 {
     QVector<int> roles;
     roles.append(RoleNames::ManRole);
@@ -209,7 +209,7 @@ void ChessBoard::handleManChanged()
     emit dataChanged(index,index,roles);
 }
 
-void ChessBoard::append(const QJsonObject &cell)
+void CheckersBoard::append(const QJsonObject &cell)
 {
     int index=m_board.size();
 
@@ -223,7 +223,7 @@ void ChessBoard::append(const QJsonObject &cell)
     emit endInsertRows();
 }
 
-void ChessBoard::initialize(QJsonArray board,int boardSize)
+void CheckersBoard::initialize(QJsonArray board,int boardSize)
 {
     clear();
     setBoardSize(boardSize);
@@ -232,13 +232,13 @@ void ChessBoard::initialize(QJsonArray board,int boardSize)
     }
 }
 
-void ChessBoard::moveMan(const QString player, QJsonObject from, QJsonObject to)
+void CheckersBoard::moveMan(const QString player, QJsonObject from, QJsonObject to)
 {
     moveMan(player,from["row"].toInt(),from["col"].toInt()
             ,to["row"].toInt(),to["col"].toInt());
 }
 
-void ChessBoard::setBoardSize(int boardSize)
+void CheckersBoard::setBoardSize(int boardSize)
 {
     if(m_boardSize!= boardSize){
         m_boardSize=boardSize;
@@ -246,27 +246,27 @@ void ChessBoard::setBoardSize(int boardSize)
     }
 }
 
-bool ChessBoard::isOnTopBorder(const Cell &cell) const
+bool CheckersBoard::isOnTopBorder(const Cell &cell) const
 {
     return cell.row() == (m_boardSize-1);
 }
 
-bool ChessBoard::isOnBottomBorder(const Cell &cell) const
+bool CheckersBoard::isOnBottomBorder(const Cell &cell) const
 {
     return cell.row() == 0;
 }
 
-bool ChessBoard::isOnLeftBorder(const Cell &cell) const
+bool CheckersBoard::isOnLeftBorder(const Cell &cell) const
 {
     return cell.col() == 0;
 }
 
-bool ChessBoard::isOnRightBorder(const Cell &cell) const
+bool CheckersBoard::isOnRightBorder(const Cell &cell) const
 {
     return cell.col() == (m_boardSize-1);
 }
 
-Cell const& ChessBoard::getTopLeft(const Cell &from,const Cell &nullValue) const
+Cell const& CheckersBoard::getTopLeft(const Cell &from,const Cell &nullValue) const
 {
     if(!(isOnTopBorder(from) || isOnLeftBorder(from)))
         return m_board[indexOf(from.row()+1,from.col()-1)];
@@ -274,7 +274,7 @@ Cell const& ChessBoard::getTopLeft(const Cell &from,const Cell &nullValue) const
         return nullValue;
 }
 
-Cell const& ChessBoard::getBottomLeft(const Cell &from,const Cell &nullValue) const
+Cell const& CheckersBoard::getBottomLeft(const Cell &from,const Cell &nullValue) const
 {
     if(!(isOnBottomBorder(from) || isOnLeftBorder(from)))
         return m_board[indexOf(from.row()-1,from.col()-1)];
@@ -282,7 +282,7 @@ Cell const& ChessBoard::getBottomLeft(const Cell &from,const Cell &nullValue) co
         return nullValue;
 }
 
-Cell const& ChessBoard::getTopRight(const Cell &from,const Cell &nullValue) const
+Cell const& CheckersBoard::getTopRight(const Cell &from,const Cell &nullValue) const
 {
     if(!(isOnTopBorder(from) || isOnRightBorder(from)))
         return m_board[indexOf(from.row()+1,from.col()+1)];
@@ -290,7 +290,7 @@ Cell const& ChessBoard::getTopRight(const Cell &from,const Cell &nullValue) cons
         return nullValue;
 }
 
-Cell const& ChessBoard::getBottomRight(const Cell &from,const Cell &nullValue) const
+Cell const& CheckersBoard::getBottomRight(const Cell &from,const Cell &nullValue) const
 {
     if(!(isOnBottomBorder(from) || isOnRightBorder(from)))
         return m_board[indexOf(from.row()-1,from.col()+1)];
@@ -298,7 +298,7 @@ Cell const& ChessBoard::getBottomRight(const Cell &from,const Cell &nullValue) c
         return nullValue;
 }
 
-QMap<Cell,bool> ChessBoard::getAvailableMoves(const Cell &from)const{
+QMap<Cell,bool> CheckersBoard::getAvailableMoves(const Cell &from)const{
     if(from.containsMan())
         return getAvaibleMovesForMan(from);
     else if(from.containsKing())
@@ -307,8 +307,8 @@ QMap<Cell,bool> ChessBoard::getAvailableMoves(const Cell &from)const{
         return QMap<Cell,bool>();
 }
 
-Cell const & ChessBoard::getDiagonalMove(const Cell &from, const Cell &nullValue, const QString allowedToMovePlayer
-                                         ,const std::function<Cell const&(const ChessBoard*, const Cell &,const Cell &)> &diagonalGetter) const
+Cell const & CheckersBoard::getDiagonalMove(const Cell &from, const Cell &nullValue, const QString allowedToMovePlayer
+                                         ,const std::function<Cell const&(const CheckersBoard*, const Cell &,const Cell &)> &diagonalGetter) const
 {
     const QString player=from.man()["whoose"].toString();
 
@@ -331,25 +331,25 @@ Cell const & ChessBoard::getDiagonalMove(const Cell &from, const Cell &nullValue
     return nullValue;
 }
 
-QMap<Cell,bool> ChessBoard::getAvaibleMovesForMan(const Cell &from)const
+QMap<Cell,bool> CheckersBoard::getAvaibleMovesForMan(const Cell &from)const
 {
     QMap<Cell,bool> result;
     const Cell& nullValue=m_board.at(1);
 
     Cell cell;
-    if((cell = getDiagonalMove(from,nullValue,"bottomPlayer",&ChessBoard::getTopLeft))
+    if((cell = getDiagonalMove(from,nullValue,"bottomPlayer",&CheckersBoard::getTopLeft))
             !=nullValue){
         result.insert(cell,!cell.isNear(from));
     }
-    if((cell = getDiagonalMove(from,nullValue,"bottomPlayer",&ChessBoard::getTopRight))
+    if((cell = getDiagonalMove(from,nullValue,"bottomPlayer",&CheckersBoard::getTopRight))
             !=nullValue){
         result.insert(cell,!cell.isNear(from));
     }
-    if((cell = getDiagonalMove(from,nullValue,"topPlayer",&ChessBoard::getBottomLeft))
+    if((cell = getDiagonalMove(from,nullValue,"topPlayer",&CheckersBoard::getBottomLeft))
             !=nullValue){
         result.insert(cell,!cell.isNear(from));
     }
-    if((cell = getDiagonalMove(from,nullValue,"topPlayer",&ChessBoard::getBottomRight))
+    if((cell = getDiagonalMove(from,nullValue,"topPlayer",&CheckersBoard::getBottomRight))
             !=nullValue){
         result.insert(cell,!cell.isNear(from));
     }
@@ -357,8 +357,8 @@ QMap<Cell,bool> ChessBoard::getAvaibleMovesForMan(const Cell &from)const
     return result;
 }
 
-void ChessBoard::getDiagonalMovesKing(const Cell &from, QMap<Cell,bool> &result
-                                      ,const std::function<Cell const&(const ChessBoard*,const Cell&,const Cell&)>
+void CheckersBoard::getDiagonalMovesKing(const Cell &from, QMap<Cell,bool> &result
+                                      ,const std::function<Cell const&(const CheckersBoard*,const Cell&,const Cell&)>
                                       &diagonalGetter)const
 {
     bool isEatMove=false;
@@ -381,19 +381,19 @@ void ChessBoard::getDiagonalMovesKing(const Cell &from, QMap<Cell,bool> &result
     }
 }
 
-QMap<Cell,bool>  ChessBoard::getAvaibleMovesForKing(const Cell &from) const
+QMap<Cell,bool>  CheckersBoard::getAvaibleMovesForKing(const Cell &from) const
 {
     QMap<Cell,bool> result;
 
-    getDiagonalMovesKing(from, result,&ChessBoard::getTopLeft);
-    getDiagonalMovesKing(from, result,&ChessBoard::getTopRight);
-    getDiagonalMovesKing(from, result,&ChessBoard::getBottomLeft);
-    getDiagonalMovesKing(from, result,&ChessBoard::getBottomRight);
+    getDiagonalMovesKing(from, result,&CheckersBoard::getTopLeft);
+    getDiagonalMovesKing(from, result,&CheckersBoard::getTopRight);
+    getDiagonalMovesKing(from, result,&CheckersBoard::getBottomLeft);
+    getDiagonalMovesKing(from, result,&CheckersBoard::getBottomRight);
 
     return result;
 }
 
-bool ChessBoard::hasMoves(const QString player) const
+bool CheckersBoard::hasMoves(const QString player) const
 {
     bool result=false;
     QVector<Cell> cells=getPlayersCells(player);
@@ -408,7 +408,7 @@ bool ChessBoard::hasMoves(const QString player) const
     return result;
 }
 
-ChessBoard& ChessBoard::operator=(const ChessBoard &second)
+CheckersBoard& CheckersBoard::operator=(const CheckersBoard &second)
 {
     m_board = second.m_board;
     m_boardSize = second.m_boardSize;
@@ -419,26 +419,12 @@ ChessBoard& ChessBoard::operator=(const ChessBoard &second)
     return *this;
 }
 
-void ChessBoard::applyMove(const Move move)
-{
-    if(move != Move()){
-        applyMove(m_board[indexOf(move.from().row(),move.from().col())]
-                ,m_board[indexOf(move.to().row(),move.to().col())]);
-    }
-}
-
-void ChessBoard::applyMoves(const QVector<Move> moves)
-{
-    foreach(const Move move,moves)
-        applyMove(move);
-}
-
-bool ChessBoard::canEat(const Cell &cell)
+bool CheckersBoard::canEat(const Cell &cell)
 {
     return getAvailableMoves(cell).values().contains(true);
 }
 
-void ChessBoard::applyMove(Cell &from, Cell &to)
+void CheckersBoard::applyMove(Cell &from,Cell &to)
 {
     QString player = from.man()["whoose"].toString();
     if(player.isEmpty())

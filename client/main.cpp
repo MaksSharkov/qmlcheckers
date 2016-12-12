@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
     app.setApplicationName("qmlcheckers");
 
     qmlRegisterType<Cell>("Checkers",1,0,"Cell");
-    qmlRegisterType<ChessBoard>("Checkers",1,0,"CheckersBoard");
+    qmlRegisterType<CheckersBoard>("Checkers",1,0,"CheckersBoard");
 
     QQmlApplicationEngine engine;
     engine.load(QUrl(QLatin1String("qrc:/qml/view/main.qml")));

@@ -1,6 +1,6 @@
 #include "move.h"
 
-Move::Move(const Cell from, const Cell to, bool isEating,bool mustEatFuther)
+CheckersMove::CheckersMove(const Cell from, const Cell to, bool isEating,bool mustEatFuther)
     : m_from(from)
     , m_to(to)
     , m_isEating(isEating)
@@ -9,58 +9,58 @@ Move::Move(const Cell from, const Cell to, bool isEating,bool mustEatFuther)
 
 }
 
-Cell Move::from()const
+Cell CheckersMove::from()const
 {
     return m_from;
 }
 
-Cell Move::to()const
+Cell CheckersMove::to()const
 {
     return m_to;
 }
 
-bool Move::isEating() const
+bool CheckersMove::isEating() const
 {
     return m_isEating;
 }
 
-void Move::setFrom(const Cell from)
+void CheckersMove::setFrom(const Cell from)
 {
     if(m_from != from){
         m_from=from;
     }
 }
 
-void Move::setTo(const Cell to)
+void CheckersMove::setTo(const Cell to)
 {
     if(m_to != to){
         m_to=to;
     }
 }
 
-void Move::setIsEating(const bool isEating)
+void CheckersMove::setIsEating(const bool isEating)
 {
     if(m_isEating != isEating){
         m_isEating=isEating;
     }
 }
 
-bool Move::operator ==(const Move &other)const
+bool CheckersMove::operator ==(const CheckersMove &other)const
 {
     return (m_from == other.m_from) && (m_to == other.m_to) && (m_isEating == other.isEating());
 }
 
-bool Move::operator !=(const Move &other)const
+bool CheckersMove::operator !=(const CheckersMove &other)const
 {
     return !operator ==(other);
 }
 
-QString Move::toString() const
+QString CheckersMove::toString() const
 {
     return QString("[%1-%2]").arg(m_from.name(),m_to.name());
 }
 
-QPair<Cell,Cell> Move::toPair() const
+QPair<Cell,Cell> CheckersMove::toPair() const
 {
     QPair<Cell,Cell> output;
     output.first = from();
@@ -68,17 +68,26 @@ QPair<Cell,Cell> Move::toPair() const
     return output;
 }
 
-bool Move::operator <(const Move &other)const
+bool CheckersMove::operator <(const CheckersMove &other)const
 {
     return m_from < other.m_from;
 }
 
-bool Move::mustEatFuther()const
+bool CheckersMove::mustEatFuther()const
 {
     return m_mustEatFuther;
 }
 
-void Move::setMustReadFuther(const bool mustEatFuther)
+void CheckersMove::setMustReadFuther(const bool mustEatFuther)
 {
     m_mustEatFuther = mustEatFuther;
+}
+
+QString toString(const MoveSequence sequence)
+{
+    QString result;
+    foreach(const CheckersMove move,sequence)
+        result +=move.toString();
+
+    return result;
 }

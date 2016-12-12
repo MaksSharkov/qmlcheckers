@@ -137,3 +137,10 @@ bool Cell::operator <(const Cell &other)const
 {
     return m_row < other.m_row;
 }
+
+QString getEnemyPlayer(const QString player)
+{
+    const QString enemyPlayer = (player == "topPlayer") ? "bottomPlayer" : "topPlayer";
+
+    return enemyPlayer;
+}

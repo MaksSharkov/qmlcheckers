@@ -10,16 +10,15 @@
 #include <functional>
 
 #include "checkers/cell.h"
-#include "checkers/ai/move.h"
 
-class ChessBoard : public QAbstractListModel
+class CheckersBoard : public QAbstractListModel
 {
-    friend class BotUtils;
+    friend class CheckersSituation;
     Q_OBJECT
     Q_PROPERTY(int boardSize READ boardSize NOTIFY boardSizeChanged)
 public:
-    ChessBoard(int boardSize=8, QObject *parent = 0);
-    ChessBoard(const ChessBoard &other);
+    CheckersBoard(int boardSize=8, QObject *parent = 0);
+    CheckersBoard(const CheckersBoard &other);
     enum RoleNames {
         RowRole = Qt::UserRole+1
         ,ColRole
@@ -53,7 +52,7 @@ public:
     virtual int rowCount(const QModelIndex &parent) const;
     virtual QVariant data(const QModelIndex &index, int role) const;
 
-    ChessBoard& operator=(const ChessBoard &second);
+    CheckersBoard& operator=(const CheckersBoard &second);
 signals:
     void manMoved(QString player,Cell &from,Cell &to,bool giveTurnToNext);
     void boardSizeChanged(int);
@@ -70,8 +69,6 @@ public slots:
 protected:
     virtual QHash<int, QByteArray> roleNames() const override;
 
-    void applyMove(const Move move);
-    void applyMoves(const QVector<Move> moves);
     void applyMove(Cell &from, Cell &to);
 
 private slots:
@@ -88,11 +85,11 @@ private:
     const Cell& getBottomRight(const Cell &from,const Cell &nullValue)const;
 
     Cell const & getDiagonalMove(const Cell &from, const Cell &nullValue, const QString allowedToMovePlayer
-                                 , const std::function<Cell const&(const ChessBoard*,const Cell&,const Cell&)>
+                                 , const std::function<Cell const&(const CheckersBoard*,const Cell&,const Cell&)>
                                  &diagonalGetter) const;
 
     void getDiagonalMovesKing(const Cell &from, QMap<Cell,bool> &result
-                              ,const std::function<Cell const&(const ChessBoard*,const Cell&,const Cell&)>
+                              ,const std::function<Cell const&(const CheckersBoard*,const Cell&,const Cell&)>
                               &diagonalGetter) const;
 
 private:

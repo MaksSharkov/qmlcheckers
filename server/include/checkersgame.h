@@ -50,7 +50,7 @@ private slots:
     void removeBot();
 
 private:
-    ChessBoard m_board;
+    CheckersBoard m_board;
 
     bool m_isBottomPlayerTurnNow;
 

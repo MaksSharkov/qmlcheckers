@@ -76,4 +76,6 @@ private:
 
 };
 
+QString getEnemyPlayer(const QString player);
+
 #endif // CELL_H

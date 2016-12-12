@@ -5,7 +5,10 @@
 
 #include "checkers/cell.h"
 
-class Move
+#include <QVector>
+
+
+class CheckersMove
 {
     Q_GADGET
     Q_PROPERTY(Cell from READ from WRITE setFrom )
@@ -13,16 +16,16 @@ class Move
     Q_PROPERTY(bool isEating READ isEating WRITE setIsEating)
     Q_PROPERTY(bool mustEatFuther  READ mustEatFuther WRITE setMustReadFuther);
 public:
-    Move(const Cell from=Cell(), const Cell to=Cell(), bool isEating=false, bool mustEatFuther=false);
+    CheckersMove(const Cell from=Cell(), const Cell to=Cell(), bool isEating=false, bool mustEatFuther=false);
 
     Q_INVOKABLE Cell from()const;
     Q_INVOKABLE Cell to() const;
     Q_INVOKABLE bool isEating()const;
     Q_INVOKABLE bool mustEatFuther()const;
 
-    bool operator ==(const Move &other)const;
-    bool operator !=(const Move &other)const;
-    bool operator <(const Move &other)const;
+    bool operator ==(const CheckersMove &other)const;
+    bool operator !=(const CheckersMove &other)const;
+    bool operator <(const CheckersMove &other)const;
 
     QString toString()const;
     QPair<Cell,Cell> toPair()const;
@@ -40,6 +43,10 @@ private:
     bool m_mustEatFuther;
 };
 
-Q_DECLARE_METATYPE(Move)
+Q_DECLARE_METATYPE(CheckersMove)
+
+typedef QVector<CheckersMove> MoveVariants;
+typedef QVector<CheckersMove> MoveSequence;
+QString toString(const MoveSequence sequence);
 
 #endif // MOVE_H
