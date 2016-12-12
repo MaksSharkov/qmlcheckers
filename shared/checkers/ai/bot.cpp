@@ -21,14 +21,14 @@ QVector<CheckersMove> BotUtils::getAllPlayersMoves(const QString &player, const 
 
     Cell testTo;
     Cell testFrom;
-    foreach(auto move,result){
-        if(move.isEating()){
+    for(int i = 0 ;i < result.size() ; i++){
+        if(result[i].isEating()){
             CheckersSituation newSituation(board);
-            newSituation.applyMove(move);
-            testTo=move.to();
-            testFrom=move.from();
+            newSituation.applyMove(result[i]);
+            testTo=result[i].to();
+            testFrom=result[i].from();
             testTo.swapMans(testFrom);
-            move.setMustReadFuther(newSituation.board().canEat(testTo));
+            result[i].setMustReadFuther(newSituation.board().canEat(testTo));
         }
     }
     return result;
