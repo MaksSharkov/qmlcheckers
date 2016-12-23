@@ -70,8 +70,18 @@ CheckersMove BotUtils::getMoveFor(const Cell &from,const QString player,const Ch
         }
     }
 
+    //Find the best move sequence
     CheckersSituation initialSituation = CheckersSituation(board);
-    initialSituation.sortByRate(tree.last(),player);
+    int currentRate=initialSituation.getRate(tree.last().first());
+    MoveSequence bestMoves = tree.last().first();
+    int maxRate=currentRate;
+    foreach (const MoveSequence sequence, tree.last()) {
+        currentRate = initialSituation.getRate(sequence);
+        if(currentRate > maxRate){
+            maxRate = currentRate;
+            bestMoves = sequence;
+        }
+    }
 
     for(int depth=0;depth<analyzeDepth;depth++){
         qDebug("Bot Tier %d variants of move:",depth);
@@ -83,7 +93,7 @@ CheckersMove BotUtils::getMoveFor(const Cell &from,const QString player,const Ch
         }
     }
 
-    return tree.last().first().first();
+    return bestMoves.first();
 }
 
 QPair<Cell,Cell> BotUtils::getMove(const QString &player, const CheckersBoard &board)
